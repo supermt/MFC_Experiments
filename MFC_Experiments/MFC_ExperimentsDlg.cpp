@@ -178,7 +178,7 @@ void CMFC_ExperimentsDlg::OnBnClickedEnterCoin()
 }
 
 
-
+	
 void CMFC_ExperimentsDlg::OnBnClickedEnterQueue()
 {
 	// TODO: Add your control notification handler code here
