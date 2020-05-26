@@ -1,3 +1,6 @@
 ipch/*
 *.sdf
 *.opensdf
+Debug/*
+*/Debug/*
+*.log
