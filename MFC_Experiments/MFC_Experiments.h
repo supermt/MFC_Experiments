@@ -12,6 +12,7 @@
 #include "CoinFlipDlg.h"
 #include "QueueingDlg.h"
 #include "InventoryDlg.h"
+#include "InventoryResultListDlg.h"
 
 
 // CMFC_ExperimentsApp:

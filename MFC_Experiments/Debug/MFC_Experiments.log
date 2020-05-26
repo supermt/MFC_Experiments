@@ -1,19 +1,5 @@
-﻿Build started 2020/5/26 16:11:39.
-     1>Project "C:\Users\18007\Documents\Visual Studio 2012\Projects\MFC_Experiments\MFC_Experiments\MFC_Experiments.vcxproj" on node 2 (Build target(s)).
-     1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\MFC_Experiments.pch" /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt QueueingDlg.cpp
-         QueueingDlg.cpp
-       Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\18007\Documents\Visual Studio 2012\Projects\MFC_Experiments\Debug\MFC_Experiments.exe" /INCREMENTAL /NOLOGO /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:"C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\Include\Manifest\dpiaware.manifest" /DEBUG /PDB:"C:\Users\18007\Documents\Visual Studio 2012\Projects\MFC_Experiments\Debug\MFC_Experiments.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /ENTRY:"wWinMainCRTStartup" /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\18007\Documents\Visual Studio 2012\Projects\MFC_Experiments\Debug\MFC_Experiments.lib" /MACHINE:X86 Debug\MFC_Experiments.res
-         Debug\CoinFlipDlg.obj
-         Debug\InventoryDlg.obj
-         Debug\MFC_Experiments.obj
-         Debug\MFC_ExperimentsDlg.obj
-         Debug\QueueingDlg.obj
-         Debug\stdafx.obj
-         MFC_Experiments.vcxproj -> C:\Users\18007\Documents\Visual Studio 2012\Projects\MFC_Experiments\Debug\MFC_Experiments.exe
-     1>Done Building Project "C:\Users\18007\Documents\Visual Studio 2012\Projects\MFC_Experiments\MFC_Experiments\MFC_Experiments.vcxproj" (Build target(s)).
+﻿Build started 2020/5/26 16:59:52.
 
 Build succeeded.
 
-Time Elapsed 00:00:00.87
+Time Elapsed 00:00:00.04

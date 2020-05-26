@@ -39,6 +39,9 @@
     <ClInclude Include="InventoryDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="InventoryResultListDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MFC_Experiments.cpp">
@@ -57,6 +60,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="InventoryDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InventoryResultListDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

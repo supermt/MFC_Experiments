@@ -1,5 +1,7 @@
 #pragma once
+#include "afxcmn.h"
 
+#include "InventoryResultListDlg.h"
 
 // InventoryDlg dialog
 
@@ -18,4 +20,7 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
+public:
+	CListCtrl PolicyList;
+	afx_msg void OnBnClickedButton4();
 };

@@ -100,6 +100,7 @@
   <ItemGroup>
     <ClInclude Include="CoinFlipDlg.h" />
     <ClInclude Include="InventoryDlg.h" />
+    <ClInclude Include="InventoryResultListDlg.h" />
     <ClInclude Include="MFC_Experiments.h" />
     <ClInclude Include="MFC_ExperimentsDlg.h" />
     <ClInclude Include="QueueingDlg.h" />
@@ -110,6 +111,7 @@
   <ItemGroup>
     <ClCompile Include="CoinFlipDlg.cpp" />
     <ClCompile Include="InventoryDlg.cpp" />
+    <ClCompile Include="InventoryResultListDlg.cpp" />
     <ClCompile Include="MFC_Experiments.cpp" />
     <ClCompile Include="MFC_ExperimentsDlg.cpp" />
     <ClCompile Include="QueueingDlg.cpp" />
