@@ -1,6 +1,7 @@
 #pragma once
 #include "afxcmn.h"
-
+#include "afxwin.h"
+#include "QueueingSolvers.h"
 
 // QueueingDlg dialog
 
@@ -22,4 +23,12 @@ protected:
 public:
 	afx_msg void OnBnClickedCheck1();
 	CListCtrl QueueingResultList;
+	CButton fixed_customer_or_not;
+	CButton fixed_length_or_not;
+	afx_msg void OnBnClickedRun();
+	afx_msg void OnBnClickedClearResult();
+	afx_msg void OnBnClickedFixedCustomer();
+	afx_msg void OnBnClickedFixedLength();
+	int row_count;
+	CButton RunButton;
 };
