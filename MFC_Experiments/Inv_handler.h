@@ -2,9 +2,13 @@
 class Inv_handler
 {
 public:
-	Inv_handler(void);
+	Inv_handler();
+	void set_parameters(int initial_inv_level, int num_months, int num_policies, int num_values_demand,
+		float mean_interdemand, float setup_cost, float incremental_cost, float holding_cost,
+		float shortage_cost, float minlag, float maxlag);
 	~Inv_handler(void);
 	void bootstrap();
+	void fill_prob_distri_function(float input_prob_func[]);
 
 private:
 	int   amount, bigs, initial_inv_level, inv_level, next_event_type, num_events,
@@ -14,6 +18,7 @@ private:
 		shortage_cost, sim_time, time_last_event, time_next_event[5],
 		total_ordering_cost;
 	FILE  *infile, *outfile;
+	int num_policies;
 
 	void  initialize(void);
 	void  timing(void);

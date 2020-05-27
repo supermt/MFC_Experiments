@@ -47,7 +47,7 @@ public:
 	Inv_handler data_handler;
 	afx_msg void OnBnClickedInitialBtn();
 	CEdit input_rep;
-	CEdit initial_inv_level;
+	CEdit input_initial_inv_level;
 	CEdit input_num_months;
 	CEdit input_num_values_demand;
 	CEdit input_mean_interdemand;

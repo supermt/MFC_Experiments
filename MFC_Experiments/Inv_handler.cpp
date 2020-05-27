@@ -3,9 +3,16 @@
 #include <math.h>
 #include "RandomStream.h"
 
-Inv_handler::Inv_handler(void)
+
+Inv_handler::Inv_handler()
 {
-	int i, num_policies;
+}
+
+
+void Inv_handler::set_parameters(int initial_inv_level, int num_months, int num_policies, int num_values_demand,
+								 float mean_interdemand, float setup_cost, float incremental_cost, float holding_cost,
+								 float shortage_cost, float minlag, float maxlag)
+{
 
 	/* Open input and output files. */
 
@@ -17,15 +24,25 @@ Inv_handler::Inv_handler(void)
 	num_events = 4;
 
 	/* Read input parameters. */
+	this->initial_inv_level=initial_inv_level;
+	this->num_months = num_months;
+	this->num_policies=num_policies;
+	this->num_values_demand=num_values_demand;
+	this->mean_interdemand=mean_interdemand;
+	this->setup_cost=setup_cost;
+	this->incremental_cost=incremental_cost;
+	this->holding_cost=holding_cost;
+	this->shortage_cost=shortage_cost;
+	this->minlag=minlag;
+	this->maxlag=maxlag;
 
-	fscanf_s(infile, "%d %d %d %d %f %f %f %f %f %f %f",
-		&initial_inv_level, &num_months, &num_policies, &num_values_demand,
-		&mean_interdemand, &setup_cost, &incremental_cost, &holding_cost,
-		&shortage_cost, &minlag, &maxlag);
-	for (i = 1; i <= num_values_demand; ++i)
-		fscanf_s(infile, "%f", &prob_distrib_demand[i]);
 }
 
+void Inv_handler::fill_prob_distri_function(float input_prob_func[]){
+	for (int i = 1; i <= num_values_demand;++i){
+		prob_distrib_demand[i]=input_prob_func[i-1];
+	}
+}
 
 Inv_handler::~Inv_handler(void)
 {
@@ -212,7 +229,7 @@ float Inv_handler::uniform(float a, float b)  /* Uniform variate generation func
 }
 
 void Inv_handler::bootstrap(){
-	int i, num_policies=9;
+	int i;
 
 
 	/* Write report heading and input parameters. */

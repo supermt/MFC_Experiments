@@ -49,7 +49,7 @@ void InventoryDlg::DoDataExchange(CDataExchange* pDX)
 	RunButton.EnableWindow(0);
 	DDX_Control(pDX, INV_INPUT_SEED, input_seed);
 	DDX_Control(pDX, INV_INPUT_REPEAT, input_rep);
-	DDX_Control(pDX, INV_INITAL_LEVEL, initial_inv_level);
+	DDX_Control(pDX, INV_INITAL_LEVEL, input_initial_inv_level);
 	DDX_Control(pDX, INV_SIM_LENGTH, input_num_months);
 	DDX_Control(pDX, INV_INPUT_DEMAND_SIZE, input_num_values_demand);
 	DDX_Control(pDX, INV_NPUT_AVG_TIME_INTER, input_mean_interdemand);
@@ -105,6 +105,56 @@ void InventoryDlg::OnBnClickedRunBtn()
 	}
 
 	RunButton.EnableWindow(0);
+	{
+		// collect the data from all input tags;
+
+		CString initial_inv_level_cs;
+		CString num_months_cs;
+		CString num_policies_cs;
+		CString num_values_demand_cs;
+		CString mean_interdemand_cs;
+		CString setup_cost_cs;
+		CString incremental_cost_cs;
+		CString holding_cost_cs;
+		CString shortage_cost_cs;
+		CString minlag_cs;
+		CString maxlag_cs;
+
+		input_initial_inv_level.GetWindowText(initial_inv_level_cs);
+		input_num_months.GetWindowText(num_months_cs);
+		input_num_values_demand.GetWindowText(num_values_demand_cs);
+		input_mean_interdemand.GetWindowText(mean_interdemand_cs);
+		input_setup_cost.GetWindowText(setup_cost_cs);
+		input_incremental_cost.GetWindowText(incremental_cost_cs);
+		input_holding_cost.GetWindowText(holding_cost_cs);
+		input_shortage_cost.GetWindowText(shortage_cost_cs);
+		input_minlag.GetWindowText(minlag_cs);
+		input_maxlag.GetWindowText(maxlag_cs);
+		input_num_policies.GetWindowText(num_policies_cs);
+
+
+		this->data_handler.set_parameters(_ttoi(initial_inv_level_cs),_ttoi(num_months_cs),_ttoi(num_policies_cs),_ttoi(num_values_demand_cs),
+			_ttof(mean_interdemand_cs),_ttof(setup_cost_cs),_ttof(incremental_cost_cs),_ttof(holding_cost_cs),
+			_ttof(shortage_cost_cs),_ttof(minlag_cs),_ttof(maxlag_cs));
+
+		int distribution_length = _ttoi(num_values_demand_cs);
+		float distribution[BUFFER_SIZE];
+		memset(distribution,1.0,BUFFER_SIZE);
+		CString point_text;
+		for(int i = 0; i < distribution_demand_list.GetCount(); i++)
+		{
+			distribution_demand_list.GetText(i, point_text);
+			distribution[i] = _ttof(point_text);
+		}
+
+		this->data_handler.fill_prob_distri_function(distribution);
+
+	}
+
+	//	this->data_handler.set_parameters();
+	//	this->data_handler.fill_prob_distri_function();
+
+
 	this->data_handler.bootstrap();
 	RunButton.EnableWindow(1);
 
@@ -194,7 +244,7 @@ void InventoryDlg::OnBnClickedInitialBtn()
 	// TODO: Add your control notification handler code here
 	OnBnClickedLoadDefaultBtn();
 	input_rep.SetWindowText(_T("10"));
-	initial_inv_level.SetWindowText(_T("60"));
+	input_initial_inv_level.SetWindowText(_T("60"));
 	input_num_months.SetWindowText(_T("120"));
 	input_num_values_demand.SetWindowText(_T("4"));
 	input_mean_interdemand.SetWindowText(_T("0.1"));
@@ -261,6 +311,4 @@ void InventoryDlg::OnBnClickedGenPolicyBtn()
 	CString policy_count_cs;
 	policy_count_cs.Format(_T("%d"), policy_count);
 	input_num_policies.SetWindowTextW(policy_count_cs);
-	Policy new_policy = {small_head,big_head};
-	current_policy_list.push_back(new_policy);
 }
