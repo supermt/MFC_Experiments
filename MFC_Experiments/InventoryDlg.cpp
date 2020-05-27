@@ -151,11 +151,22 @@ void InventoryDlg::OnBnClickedRunBtn()
 
 	}
 
-	//	this->data_handler.set_parameters();
-	//	this->data_handler.fill_prob_distri_function();
+	{
+		// get the data from policy list
+		std::vector<int> small_head_set;
+		std::vector<int> big_head_set;
+		for (Policy temp : this->current_policy_list){
+			small_head_set.push_back(temp.small_head);
+			big_head_set.push_back(temp.big_head);
+		}
+		this->data_handler.num_policies=current_policy_list.size();
+
+		std::vector<PolicyRow> result = this->data_handler.loop(&small_head_set[0],&big_head_set[0]);
+		InvReporter new_reporter;
+		new_reporter.policy_rows = result;
+	}
 
 
-	this->data_handler.bootstrap();
 	RunButton.EnableWindow(1);
 
 }
@@ -226,7 +237,7 @@ void InventoryDlg::OnBnClickedLoadDefaultBtn()
 }
 
 
-inline void addPolicy(int small_head,int big_head,int policy_count,CListCtrl* policy_list_controller)
+inline void addPolicy(int small_head,int big_head,int policy_count,CListCtrl* policy_list_controller,std::vector<Policy> *policies)
 {
 	CString smalls_cs;
 	CString bigs_cs;
@@ -238,6 +249,10 @@ inline void addPolicy(int small_head,int big_head,int policy_count,CListCtrl* po
 	int index = policy_list_controller->InsertItem(policy_count,policy_count_cs);
 	policy_list_controller->SetItemText(index,1,smalls_cs);
 	policy_list_controller->SetItemText(index,2,bigs_cs);
+	Policy policy;
+	policy.small_head = small_head;
+	policy.big_head = big_head;
+	policies->push_back(policy);
 }
 void InventoryDlg::OnBnClickedInitialBtn()
 {
@@ -267,23 +282,22 @@ void InventoryDlg::OnBnClickedInitialBtn()
 	PolicyList.DeleteAllItems();
 	UpdateWindow();
 	CString policy_count_cs;
-	policy_count_cs.Format(_T("%d"), policy_count);
 	{		
 		// init the set
 		input_smalls.SetWindowTextW(_T("20"));
 		input_bigs.SetWindowTextW(_T("100"));
 		policy_count=9;
-		addPolicy(20,40,1,&PolicyList);
-		addPolicy(20,60,2,&PolicyList);
-		addPolicy(20,80,3,&PolicyList);
-		addPolicy(20,100,4,&PolicyList);
-		addPolicy(40,60,5,&PolicyList);
-		addPolicy(40,80,6,&PolicyList);
-		addPolicy(40,100,7,&PolicyList);
-		addPolicy(60,80,8,&PolicyList);
-		addPolicy(60,100,9,&PolicyList);
-
+		addPolicy(20,40,1,&PolicyList,&(this->current_policy_list));
+		addPolicy(20,60,2,&PolicyList,&(this->current_policy_list));
+		addPolicy(20,80,3,&PolicyList,&(this->current_policy_list));
+		addPolicy(20,100,4,&PolicyList,&(this->current_policy_list));
+		addPolicy(40,60,5,&PolicyList,&(this->current_policy_list));
+		addPolicy(40,80,6,&PolicyList,&(this->current_policy_list));
+		addPolicy(40,100,7,&PolicyList,&(this->current_policy_list));
+		addPolicy(60,80,8,&PolicyList,&(this->current_policy_list));
+		addPolicy(60,100,9,&PolicyList,&(this->current_policy_list));
 	}
+	policy_count_cs.Format(_T("%d"), policy_count);
 
 	input_num_policies.SetWindowTextW(policy_count_cs);
 	RunButton.EnableWindow(1);
@@ -306,7 +320,7 @@ void InventoryDlg::OnBnClickedGenPolicyBtn()
 	int big_head = _ttoi(bigs_cs);
 
 	policy_count++;
-	addPolicy(small_head,big_head,policy_count,&PolicyList);
+	addPolicy(small_head,big_head,policy_count,&PolicyList,&(this->current_policy_list));
 
 	CString policy_count_cs;
 	policy_count_cs.Format(_T("%d"), policy_count);

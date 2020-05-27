@@ -4,6 +4,17 @@
 #include "RandomStream.h"
 
 
+InvReporter::InvReporter()
+{
+	policy_rows = std::vector<PolicyRow>();
+}
+
+InvReporter::~InvReporter()
+{
+	policy_rows.clear();
+}
+
+
 Inv_handler::Inv_handler()
 {
 }
@@ -16,7 +27,6 @@ void Inv_handler::set_parameters(int initial_inv_level, int num_months, int num_
 
 	/* Open input and output files. */
 
-	fopen_s(&infile,"inv.in",  "r");
 	fopen_s(&outfile,"inv.out", "w");
 
 	/* Specify the number of events for the timing function. */
@@ -46,6 +56,7 @@ void Inv_handler::fill_prob_distri_function(float input_prob_func[]){
 
 Inv_handler::~Inv_handler(void)
 {
+	if(outfile) fclose(outfile);
 }
 
 
@@ -98,6 +109,8 @@ void Inv_handler::timing(void)  /* Timing function. */
 			/* The event list is empty, so stop the simulation */
 
 			fprintf(outfile, "\nEvent list empty at time %f", sim_time);
+			fflush(outfile);
+			fclose(outfile);
 			exit(1);
 		}
 
@@ -156,19 +169,22 @@ void Inv_handler::evaluate(void)  /* Inventory-evaluation event function. */
 }
 
 
-void Inv_handler::report(void)  /* Report generator function. */
+void Inv_handler::report(PolicyRow* result_row)  /* Report generator function. */
 {
 	/* Compute and write estimates of desired measures of performance. */
+
 
 	float avg_holding_cost, avg_ordering_cost, avg_shortage_cost;
 
 	avg_ordering_cost = total_ordering_cost / num_months;
 	avg_holding_cost  = holding_cost * area_holding / num_months;
 	avg_shortage_cost = shortage_cost * area_shortage / num_months;
-	fprintf(outfile, "\n\n(%3d,%3d)%15.2f%15.2f%15.2f%15.2f",
-		smalls, bigs,
-		avg_ordering_cost + avg_holding_cost + avg_shortage_cost,
-		avg_ordering_cost, avg_holding_cost, avg_shortage_cost);
+
+	result_row->policy_tuple.Format(_T("%3d,%3d"),smalls,bigs);
+	result_row->avg_total_cost.Format(_T("%15.2f"),(avg_ordering_cost + avg_holding_cost + avg_shortage_cost));
+	result_row->avg_ordering_cost.Format(_T("%15.2f"),avg_ordering_cost);
+	result_row->avg_holding_cost.Format(_T("%15.2f"),avg_holding_cost);
+	result_row->avg_shortage_cost.Format(_T("%15.2f"),avg_shortage_cost);
 }
 
 
@@ -228,42 +244,12 @@ float Inv_handler::uniform(float a, float b)  /* Uniform variate generation func
 	return a + RandomGenerator::lcgrand(1) * (b - a);
 }
 
-void Inv_handler::bootstrap(){
-	int i;
-
-
-	/* Write report heading and input parameters. */
-
-	fprintf(outfile, "Single-product inventory system\n\n");
-	fprintf(outfile, "Initial inventory level%24d items\n\n",
-		initial_inv_level);
-	fprintf(outfile, "Number of demand sizes%25d\n\n", num_values_demand);
-	fprintf(outfile, "Distribution function of demand sizes  ");
-	for (i = 1; i <= num_values_demand; ++i)
-		fprintf(outfile, "%8.3f", prob_distrib_demand[i]);
-	fprintf(outfile, "\n\nMean interdemand time%26.2f\n\n", mean_interdemand);
-	fprintf(outfile, "Delivery lag range%29.2f to%10.2f months\n\n", minlag,
-		maxlag);
-	fprintf(outfile, "Length of the simulation%23d months\n\n", num_months);
-	fprintf(outfile, "K =%6.1f   i =%6.1f   h =%6.1f   pi =%6.1f\n\n",
-		setup_cost, incremental_cost, holding_cost, shortage_cost);
-	fprintf(outfile, "Number of policies%29d\n\n", num_policies);
-	fprintf(outfile, "                 Average        Average");
-	fprintf(outfile, "        Average        Average\n");
-	fprintf(outfile, "  Policy       total cost    ordering cost");
-	fprintf(outfile, "  holding cost   shortage cost");
-
-	/* Run the simulation varying the inventory policy. */
-
-	for (i = 1; i <= num_policies; ++i) {
-
-		/* Read the inventory policy, and initialize the simulation. */
-
-		fscanf_s(infile, "%d %d", &smalls, &bigs);
+std::vector<PolicyRow> Inv_handler::loop(int small_head[], int big_head[]){
+	std::vector<PolicyRow> results;
+	for (int i = 1; i <= num_policies; ++i) {
+		smalls=small_head[i-1];
+		bigs=big_head[i-1];
 		initialize();
-
-		/* Run the simulation until it terminates after an end-simulation event
-		(type 3) occurs. */
 
 		do {
 
@@ -288,21 +274,20 @@ void Inv_handler::bootstrap(){
 				evaluate();
 				break;
 			case 3:
-				report();
+				PolicyRow temp;
+				report(&temp);
+				results.push_back(temp);
 				break;
 			}
 
-			/* If the event just executed was not the end-simulation event (type 3),
-			continue simulating.  Otherwise, end the simulation for the current
-			(s,S) pair and go on to the next pair (if any). */
-
 		} while (next_event_type != 3);
 	}
+	return results;
+}
 
-	/* End the simulations. */
 
-	fclose(infile);
-	fclose(outfile);
+void Inv_handler::report_data(){
+	int i;
 
 	return ;
 
