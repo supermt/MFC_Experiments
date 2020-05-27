@@ -43,14 +43,14 @@ void InventoryDlg::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(InventoryDlg, CDialogEx)
-	ON_BN_CLICKED(IDC_BUTTON4, &InventoryDlg::OnBnClickedButton4)
+	ON_BN_CLICKED(INV_POP_RESULT_LIST, &InventoryDlg::OnBnClickedPopResult)
 END_MESSAGE_MAP()
 
 
 // InventoryDlg message handlers
 
 
-void InventoryDlg::OnBnClickedButton4()
+void InventoryDlg::OnBnClickedPopResult()
 {
 	// TODO: Add your control notification handler code here
 	InventoryResultListDlg newTag;

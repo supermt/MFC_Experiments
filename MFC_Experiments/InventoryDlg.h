@@ -24,7 +24,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	CListCtrl PolicyList;
-	afx_msg void OnBnClickedButton4();
+	afx_msg void OnBnClickedPopResult();
 private:
 	Inv_handler handler;
 };

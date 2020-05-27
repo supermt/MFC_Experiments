@@ -1,13 +1,17 @@
-﻿Build started 2020/5/27 21:57:48.
+﻿Build started 2020/5/27 22:08:03.
      1>Project "C:\Users\18007\Documents\Visual Studio 2012\Projects\MFC_Experiments\MFC_Experiments\MFC_Experiments.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\MFC_Experiments.pch" /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt InventoryDlg.cpp QueueingDlg.cpp
-         QueueingDlg.cpp
-     1>c:\users\18007\documents\visual studio 2012\projects\mfc_experiments\mfc_experiments\queueingdlg.cpp(230): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\18007\documents\visual studio 2012\projects\mfc_experiments\mfc_experiments\queueingdlg.cpp(231): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\18007\documents\visual studio 2012\projects\mfc_experiments\mfc_experiments\queueingdlg.cpp(232): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\MFC_Experiments.pch" /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt CoinFlipDlg.cpp InventoryDlg.cpp InventoryResultListDlg.cpp MFC_Experiments.cpp MFC_ExperimentsDlg.cpp QueueingDlg.cpp
          InventoryDlg.cpp
          Generating Code...
+         Skipping... (no relevant changes detected)
+         QueueingDlg.cpp
+         MFC_ExperimentsDlg.cpp
+         MFC_Experiments.cpp
+         InventoryResultListDlg.cpp
+         CoinFlipDlg.cpp
+       ResourceCompile:
+         C:\Program Files (x86)\Windows Kits\8.0\bin\x86\rc.exe /D _DEBUG /D _UNICODE /D UNICODE /l"0x0409" /IDebug\ /nologo /fo"Debug\MFC_Experiments.res" MFC_Experiments.rc 
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\18007\Documents\Visual Studio 2012\Projects\MFC_Experiments\Debug\MFC_Experiments.exe" /INCREMENTAL /NOLOGO /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:"C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\Include\Manifest\dpiaware.manifest" /DEBUG /PDB:"C:\Users\18007\Documents\Visual Studio 2012\Projects\MFC_Experiments\Debug\MFC_Experiments.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /ENTRY:"wWinMainCRTStartup" /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\18007\Documents\Visual Studio 2012\Projects\MFC_Experiments\Debug\MFC_Experiments.lib" /MACHINE:X86 Debug\MFC_Experiments.res
          Debug\CoinFlipDlg.obj
@@ -25,4 +29,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.96
+Time Elapsed 00:00:01.78
