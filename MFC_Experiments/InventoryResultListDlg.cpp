@@ -5,16 +5,15 @@
 #include "MFC_Experiments.h"
 #include "InventoryResultListDlg.h"
 #include "afxdialogex.h"
-
+#include "RandomStream.h"
 
 // InventoryResultListDlg dialog
 
 IMPLEMENT_DYNAMIC(InventoryResultListDlg, CDialogEx)
 
-InventoryResultListDlg::InventoryResultListDlg(CWnd* pParent /*=NULL*/)
+	InventoryResultListDlg::InventoryResultListDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(InventoryResultListDlg::IDD, pParent)
 {
-
 }
 
 InventoryResultListDlg::~InventoryResultListDlg()

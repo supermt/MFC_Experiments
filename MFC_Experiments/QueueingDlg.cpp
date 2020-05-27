@@ -22,7 +22,10 @@ IMPLEMENT_DYNAMIC(QueueingDlg, CDialogEx)
 }
 
 QueueingDlg::~QueueingDlg()
-{
+{	
+	for (auto seed : default_seeds){
+		RandomGenerator::zrng.push_back(seed);
+	}
 }
 
 void QueueingDlg::DoDataExchange(CDataExchange* pDX)
@@ -221,7 +224,7 @@ void QueueingDlg::OnBnClickedRun()
 	else{
 		third_para_cs="1000";
 	}
-	
+
 
 	int replication = _ttoi(replication_cs);
 	float avg_arrive = _ttof(avg_arrive_cs);

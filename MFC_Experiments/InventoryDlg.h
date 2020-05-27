@@ -2,6 +2,8 @@
 #include "afxcmn.h"
 
 #include "InventoryResultListDlg.h"
+#include "Inv_handler.h"
+#include "RandomStream.h"
 
 // InventoryDlg dialog
 
@@ -13,7 +15,7 @@ public:
 	InventoryDlg(CWnd* pParent = NULL);   // standard constructor
 	virtual ~InventoryDlg();
 
-// Dialog Data
+	// Dialog Data
 	enum { IDD = InventoryTag };
 
 protected:
@@ -23,4 +25,6 @@ protected:
 public:
 	CListCtrl PolicyList;
 	afx_msg void OnBnClickedButton4();
+private:
+	Inv_handler handler;
 };

@@ -48,6 +48,9 @@
     <ClInclude Include="RandomStream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Inv_handler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MFC_Experiments.cpp">
@@ -75,6 +78,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RandomStream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Inv_handler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

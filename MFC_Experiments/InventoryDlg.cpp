@@ -7,18 +7,26 @@
 #include "afxdialogex.h"
 
 
+
 // InventoryDlg dialog
 
 IMPLEMENT_DYNAMIC(InventoryDlg, CDialogEx)
 
-InventoryDlg::InventoryDlg(CWnd* pParent /*=NULL*/)
+	InventoryDlg::InventoryDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(InventoryDlg::IDD, pParent)
 {
 
+	for (auto seed : default_seeds){
+		RandomGenerator::zrng.push_back(seed);
+	}
 }
 
 InventoryDlg::~InventoryDlg()
-{
+{	
+
+	for (auto seed : default_seeds){
+		RandomGenerator::zrng.push_back(seed);
+	}
 }
 
 void InventoryDlg::DoDataExchange(CDataExchange* pDX)

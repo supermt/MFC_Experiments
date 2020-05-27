@@ -1,6 +1,6 @@
 #pragma once
 #include "afxcmn.h"
-
+#include "Inv_handler.h"
 
 // InventoryResultListDlg dialog
 
