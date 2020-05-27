@@ -2,6 +2,7 @@
 #include <vector>
 struct PolicyRow
 {
+	float sim_time;
 	CString policy_tuple;
 	CString avg_total_cost;
 	CString avg_ordering_cost;
@@ -23,7 +24,7 @@ public:
 	std::vector<PolicyRow> Inv_handler::loop(int small_head[], int big_head[]);
 
 	int num_policies;
-private:
+
 	int   amount, bigs, initial_inv_level, inv_level, next_event_type, num_events,
 		num_months, num_values_demand, smalls;
 	float area_holding, area_shortage, holding_cost, incremental_cost, maxlag,

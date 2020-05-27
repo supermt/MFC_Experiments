@@ -4,6 +4,8 @@
 #include "RandomStream.h"
 
 
+// static std::vector<std::vector<CString>> result_columns;	
+std::vector<std::vector<CString>> result_columns=std::vector<std::vector<CString>>();
 InvReporter::InvReporter()
 {
 	policy_rows = std::vector<PolicyRow>();
@@ -179,8 +181,8 @@ void Inv_handler::report(PolicyRow* result_row)  /* Report generator function. *
 	avg_ordering_cost = total_ordering_cost / num_months;
 	avg_holding_cost  = holding_cost * area_holding / num_months;
 	avg_shortage_cost = shortage_cost * area_shortage / num_months;
-
-	result_row->policy_tuple.Format(_T("%3d,%3d"),smalls,bigs);
+	result_row->sim_time = num_months;
+	result_row->policy_tuple.Format(_T("( %3d,%3d )"),smalls,bigs);
 	result_row->avg_total_cost.Format(_T("%15.2f"),(avg_ordering_cost + avg_holding_cost + avg_shortage_cost));
 	result_row->avg_ordering_cost.Format(_T("%15.2f"),avg_ordering_cost);
 	result_row->avg_holding_cost.Format(_T("%15.2f"),avg_holding_cost);

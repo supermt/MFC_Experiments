@@ -102,7 +102,7 @@ void InventoryDlg::OnBnClickedRunBtn()
 {
 	// TODO: Add your control notification handler code here
 	// clear all seeds
-	
+
 	RunButton.EnableWindow(0);
 	RunButton.SetWindowTextW(_T("waiting for running"));
 	std::fill(RandomGenerator::zrng.begin(), RandomGenerator::zrng.begin(), 0);
@@ -110,11 +110,16 @@ void InventoryDlg::OnBnClickedRunBtn()
 	CString seedText;
 	for(int i = 0; i < RandomSeedPool.GetCount(); i++)
 	{
-		id_counter++;
 		RandomSeedPool.GetText(i, seedText);
 		RandomGenerator::zrng.insert(RandomGenerator::zrng.begin(),0, _ttol(seedText));
+	}
+	CString repeat_times_cs;
+	input_rep.GetWindowTextW(repeat_times_cs);
+	int repeat_times = _ttoi(repeat_times_cs);
+	for (int round =0; round < repeat_times; round++){
+		id_counter++;
 
-		data_loading_from_screen: {
+		{
 			// collect the data from all input tags;
 			CString initial_inv_level_cs;
 			CString num_months_cs;
@@ -157,7 +162,7 @@ void InventoryDlg::OnBnClickedRunBtn()
 		}
 		InvReporter new_reporter;
 		std::vector<PolicyRow> result;
-		running_the_simulation: {
+		{
 			// get the data from policy list
 			std::vector<int> small_head_set;
 			std::vector<int> big_head_set;
@@ -168,20 +173,43 @@ void InventoryDlg::OnBnClickedRunBtn()
 			this->data_handler.num_policies=current_policy_list.size();
 
 			result = this->data_handler.loop(&small_head_set[0],&big_head_set[0]);
-			
 			new_reporter.policy_rows = result;
+			new_reporter.id = id_counter;
 		}
-		std::vector<CString> *complex_row = new std::vector<CString>();
-		InventoryResultListDlg::result_columns.push_back(complex_row);
 
-		processing_result: {
+		{
+			// repeat policy_num time;
+
+
+			int row_count = new_reporter.policy_rows.size(); 
 			CString ID_cs;
-			ID_cs.Format(_T("%d"),id_counter);
-			complex_row->push_back(ID_cs);
+			CString SIM_length_cs;
+
+			for (int policy_row = 0; policy_row < row_count; policy_row++)
+			{
+				std::vector<CString> *row = new std::vector<CString>();
+				
+				if (policy_row==0) ID_cs.Format(_T("%d"),new_reporter.id);
+				else ID_cs="";
+				row->push_back(ID_cs);
+
+				SIM_length_cs.Format(_T("%12.2f"),new_reporter.policy_rows[policy_row].sim_time);
+				row->push_back(SIM_length_cs);
+
+				row->push_back(new_reporter.policy_rows[policy_row].policy_tuple);
+				row->push_back(new_reporter.policy_rows[policy_row].avg_total_cost);
+				row->push_back(new_reporter.policy_rows[policy_row].avg_ordering_cost);
+				row->push_back(new_reporter.policy_rows[policy_row].avg_holding_cost);
+				row->push_back(new_reporter.policy_rows[policy_row].avg_shortage_cost);
+				
+				InventoryResultListDlg::result_columns.push_back(row);
+			}
+
 		}
 	}
 
-	
+
+
 	RunButton.SetWindowTextW(_T("Run"));
 	RunButton.EnableWindow(1);
 }

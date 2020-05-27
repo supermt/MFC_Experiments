@@ -34,10 +34,10 @@ void InventoryResultListDlg::DoDataExchange(CDataExchange* pDX)
 	InventoryResultListTable.InsertColumn(0,_T("ID"),LVCFMT_LEFT,40);
 	InventoryResultListTable.InsertColumn(1,_T("Simulation Length"),LVCFMT_LEFT,140);
 	InventoryResultListTable.InsertColumn(2,_T("Policy"),LVCFMT_LEFT,100);
-	InventoryResultListTable.InsertColumn(3,_T("Avg holding cost"),LVCFMT_LEFT,160);
-	InventoryResultListTable.InsertColumn(4,_T("Avg ordering cost"),LVCFMT_LEFT,160);
-	InventoryResultListTable.InsertColumn(5,_T("Avg shortage cost"),LVCFMT_LEFT,160);
-	InventoryResultListTable.InsertColumn(6,_T("Avg total cost"),LVCFMT_LEFT,160);
+	InventoryResultListTable.InsertColumn(3,_T("Avg total cost"),LVCFMT_LEFT,160);
+	InventoryResultListTable.InsertColumn(4,_T("Avg holding cost"),LVCFMT_LEFT,160);
+	InventoryResultListTable.InsertColumn(5,_T("Avg ordering cost"),LVCFMT_LEFT,160);
+	InventoryResultListTable.InsertColumn(6,_T("Avg shortage cost"),LVCFMT_LEFT,160);
 	//	InventoryResultListTable.InsertColumn(7,_T("Proportion of backlog(time)"),LVCFMT_LEFT,160);
 	//	InventoryResultListTable.InsertColumn(8,_T("Number of express orders"),LVCFMT_LEFT,160);
 	//	InventoryResultListTable.InsertColumn(9,_T("Proportion of items discarded"),LVCFMT_LEFT,160);
@@ -45,9 +45,12 @@ void InventoryResultListDlg::DoDataExchange(CDataExchange* pDX)
 
 	// refresh the list at the same time
 	int row_count = 0;
-	int column_count = 6;
+	int column_count = 7;
 	for (std::vector<CString>* row: InventoryResultListDlg::result_columns){
 		int index = InventoryResultListTable.InsertItem(row_count,row->at(0));
+		for (int i = 1;i <column_count;i++){
+			InventoryResultListTable.SetItemText(index,i,row->at(i));
+		}
 		row_count++;
 	}
 }
