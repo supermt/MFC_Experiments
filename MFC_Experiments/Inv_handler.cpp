@@ -5,7 +5,25 @@
 
 Inv_handler::Inv_handler(void)
 {
+	int i, num_policies;
 
+	/* Open input and output files. */
+
+	fopen_s(&infile,"inv.in",  "r");
+	fopen_s(&outfile,"inv.out", "w");
+
+	/* Specify the number of events for the timing function. */
+
+	num_events = 4;
+
+	/* Read input parameters. */
+
+	fscanf_s(infile, "%d %d %d %d %f %f %f %f %f %f %f",
+		&initial_inv_level, &num_months, &num_policies, &num_values_demand,
+		&mean_interdemand, &setup_cost, &incremental_cost, &holding_cost,
+		&shortage_cost, &minlag, &maxlag);
+	for (i = 1; i <= num_values_demand; ++i)
+		fscanf_s(infile, "%f", &prob_distrib_demand[i]);
 }
 
 
@@ -168,7 +186,7 @@ float Inv_handler::expon(float mean)  /* Exponential variate generation function
 
 
 int Inv_handler::random_integer(float prob_distrib[])  /* Random integer generation
-										  function. */
+													   function. */
 {
 	int   i;
 	float u;
@@ -194,26 +212,8 @@ float Inv_handler::uniform(float a, float b)  /* Uniform variate generation func
 }
 
 void Inv_handler::bootstrap(){
+	int i, num_policies=9;
 
-	int i, num_policies;
-
-	/* Open input and output files. */
-
-	fopen_s(&infile,"inv.in",  "r");
-	fopen_s(&outfile,"inv.out", "w");
-
-	/* Specify the number of events for the timing function. */
-
-	num_events = 4;
-
-	/* Read input parameters. */
-
-	fscanf_s(infile, "%d %d %d %d %f %f %f %f %f %f %f",
-		&initial_inv_level, &num_months, &num_policies, &num_values_demand,
-		&mean_interdemand, &setup_cost, &incremental_cost, &holding_cost,
-		&shortage_cost, &minlag, &maxlag);
-	for (i = 1; i <= num_values_demand; ++i)
-		fscanf_s(infile, "%f", &prob_distrib_demand[i]);
 
 	/* Write report heading and input parameters. */
 
