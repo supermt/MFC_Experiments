@@ -22,14 +22,21 @@ IMPLEMENT_DYNAMIC(InventoryDlg, CDialogEx)
 	current_policy_list = std::vector<Policy>();
 	current_policy_list.clear();
 	policy_count = 0;
+	id_counter=0;
 }
+inline void elimate_free_pointers(){
 
+	for (std::vector<CString>* target: InventoryResultListDlg::result_columns){
+		if(target) delete target;
+	}
+}
 InventoryDlg::~InventoryDlg()
 {	
 
 	for (auto seed : default_seeds){
 		RandomGenerator::zrng.push_back(seed);
 	}
+	elimate_free_pointers();
 }
 
 void InventoryDlg::DoDataExchange(CDataExchange* pDX)
@@ -95,80 +102,88 @@ void InventoryDlg::OnBnClickedRunBtn()
 {
 	// TODO: Add your control notification handler code here
 	// clear all seeds
+	
+	RunButton.EnableWindow(0);
+	RunButton.SetWindowTextW(_T("waiting for running"));
 	std::fill(RandomGenerator::zrng.begin(), RandomGenerator::zrng.begin(), 0);
 	// get all seed from randompool
 	CString seedText;
 	for(int i = 0; i < RandomSeedPool.GetCount(); i++)
 	{
+		id_counter++;
 		RandomSeedPool.GetText(i, seedText);
 		RandomGenerator::zrng.insert(RandomGenerator::zrng.begin(),0, _ttol(seedText));
-	}
 
-	RunButton.EnableWindow(0);
-	{
-		// collect the data from all input tags;
+		data_loading_from_screen: {
+			// collect the data from all input tags;
+			CString initial_inv_level_cs;
+			CString num_months_cs;
+			CString num_policies_cs;
+			CString num_values_demand_cs;
+			CString mean_interdemand_cs;
+			CString setup_cost_cs;
+			CString incremental_cost_cs;
+			CString holding_cost_cs;
+			CString shortage_cost_cs;
+			CString minlag_cs;
+			CString maxlag_cs;
 
-		CString initial_inv_level_cs;
-		CString num_months_cs;
-		CString num_policies_cs;
-		CString num_values_demand_cs;
-		CString mean_interdemand_cs;
-		CString setup_cost_cs;
-		CString incremental_cost_cs;
-		CString holding_cost_cs;
-		CString shortage_cost_cs;
-		CString minlag_cs;
-		CString maxlag_cs;
+			input_initial_inv_level.GetWindowText(initial_inv_level_cs);
+			input_num_months.GetWindowText(num_months_cs);
+			input_num_values_demand.GetWindowText(num_values_demand_cs);
+			input_mean_interdemand.GetWindowText(mean_interdemand_cs);
+			input_setup_cost.GetWindowText(setup_cost_cs);
+			input_incremental_cost.GetWindowText(incremental_cost_cs);
+			input_holding_cost.GetWindowText(holding_cost_cs);
+			input_shortage_cost.GetWindowText(shortage_cost_cs);
+			input_minlag.GetWindowText(minlag_cs);
+			input_maxlag.GetWindowText(maxlag_cs);
+			input_num_policies.GetWindowText(num_policies_cs);
 
-		input_initial_inv_level.GetWindowText(initial_inv_level_cs);
-		input_num_months.GetWindowText(num_months_cs);
-		input_num_values_demand.GetWindowText(num_values_demand_cs);
-		input_mean_interdemand.GetWindowText(mean_interdemand_cs);
-		input_setup_cost.GetWindowText(setup_cost_cs);
-		input_incremental_cost.GetWindowText(incremental_cost_cs);
-		input_holding_cost.GetWindowText(holding_cost_cs);
-		input_shortage_cost.GetWindowText(shortage_cost_cs);
-		input_minlag.GetWindowText(minlag_cs);
-		input_maxlag.GetWindowText(maxlag_cs);
-		input_num_policies.GetWindowText(num_policies_cs);
+			this->data_handler.set_parameters(_ttoi(initial_inv_level_cs),_ttoi(num_months_cs),_ttoi(num_policies_cs),_ttoi(num_values_demand_cs),
+				_ttof(mean_interdemand_cs),_ttof(setup_cost_cs),_ttof(incremental_cost_cs),_ttof(holding_cost_cs),
+				_ttof(shortage_cost_cs),_ttof(minlag_cs),_ttof(maxlag_cs));
 
-
-		this->data_handler.set_parameters(_ttoi(initial_inv_level_cs),_ttoi(num_months_cs),_ttoi(num_policies_cs),_ttoi(num_values_demand_cs),
-			_ttof(mean_interdemand_cs),_ttof(setup_cost_cs),_ttof(incremental_cost_cs),_ttof(holding_cost_cs),
-			_ttof(shortage_cost_cs),_ttof(minlag_cs),_ttof(maxlag_cs));
-
-		int distribution_length = _ttoi(num_values_demand_cs);
-		float distribution[BUFFER_SIZE];
-		memset(distribution,1.0,BUFFER_SIZE);
-		CString point_text;
-		for(int i = 0; i < distribution_demand_list.GetCount(); i++)
-		{
-			distribution_demand_list.GetText(i, point_text);
-			distribution[i] = _ttof(point_text);
+			int distribution_length = _ttoi(num_values_demand_cs);
+			float distribution[BUFFER_SIZE];
+			memset(distribution,1.0,BUFFER_SIZE);
+			CString point_text;
+			for(int i = 0; i < distribution_demand_list.GetCount(); i++)
+			{
+				distribution_demand_list.GetText(i, point_text);
+				distribution[i] = _ttof(point_text);
+			}
+			this->data_handler.fill_prob_distri_function(distribution);
 		}
-
-		this->data_handler.fill_prob_distri_function(distribution);
-
-	}
-
-	{
-		// get the data from policy list
-		std::vector<int> small_head_set;
-		std::vector<int> big_head_set;
-		for (Policy temp : this->current_policy_list){
-			small_head_set.push_back(temp.small_head);
-			big_head_set.push_back(temp.big_head);
-		}
-		this->data_handler.num_policies=current_policy_list.size();
-
-		std::vector<PolicyRow> result = this->data_handler.loop(&small_head_set[0],&big_head_set[0]);
 		InvReporter new_reporter;
-		new_reporter.policy_rows = result;
+		std::vector<PolicyRow> result;
+		running_the_simulation: {
+			// get the data from policy list
+			std::vector<int> small_head_set;
+			std::vector<int> big_head_set;
+			for (Policy temp : this->current_policy_list){
+				small_head_set.push_back(temp.small_head);
+				big_head_set.push_back(temp.big_head);
+			}
+			this->data_handler.num_policies=current_policy_list.size();
+
+			result = this->data_handler.loop(&small_head_set[0],&big_head_set[0]);
+			
+			new_reporter.policy_rows = result;
+		}
+		std::vector<CString> *complex_row = new std::vector<CString>();
+		InventoryResultListDlg::result_columns.push_back(complex_row);
+
+		processing_result: {
+			CString ID_cs;
+			ID_cs.Format(_T("%d"),id_counter);
+			complex_row->push_back(ID_cs);
+		}
 	}
 
-
+	
+	RunButton.SetWindowTextW(_T("Run"));
 	RunButton.EnableWindow(1);
-
 }
 
 
@@ -256,6 +271,7 @@ inline void addPolicy(int small_head,int big_head,int policy_count,CListCtrl* po
 }
 void InventoryDlg::OnBnClickedInitialBtn()
 {
+	elimate_free_pointers();
 	// TODO: Add your control notification handler code here
 	OnBnClickedLoadDefaultBtn();
 	input_rep.SetWindowText(_T("10"));
@@ -300,6 +316,8 @@ void InventoryDlg::OnBnClickedInitialBtn()
 	policy_count_cs.Format(_T("%d"), policy_count);
 
 	input_num_policies.SetWindowTextW(policy_count_cs);
+
+	InventoryResultListDlg::result_columns.clear();
 	RunButton.EnableWindow(1);
 }
 

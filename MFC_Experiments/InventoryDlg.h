@@ -34,6 +34,7 @@ public:
 	afx_msg void OnBnClickedPopResult();
 private:
 	Inv_handler handler;
+	int id_counter;
 public:
 	afx_msg void OnBnClickedRunBtn();
 	CListBox RandomSeedPool;

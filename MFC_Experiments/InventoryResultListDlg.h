@@ -24,11 +24,11 @@ public:
 	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
 	CListCtrl InventoryResultListTable;
 
-	static std::vector<std::vector<CString>> result_columns;	
+	static std::vector<std::vector<CString>*> result_columns;
 	/*
 	the format is like:
 	ID, Simulation time, Policy Column, avgtime....
 
 	*/
-
+	
 };

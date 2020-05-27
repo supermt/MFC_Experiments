@@ -21,7 +21,7 @@ InventoryResultListDlg::~InventoryResultListDlg()
 {
 }
 
-static std::vector<std::vector<CString>> result_columns=std::vector<std::vector<CString>>();
+std::vector<std::vector<CString>*> InventoryResultListDlg::result_columns=std::vector<std::vector<CString>*>();
 
 void InventoryResultListDlg::DoDataExchange(CDataExchange* pDX)
 {
@@ -41,6 +41,15 @@ void InventoryResultListDlg::DoDataExchange(CDataExchange* pDX)
 	//	InventoryResultListTable.InsertColumn(7,_T("Proportion of backlog(time)"),LVCFMT_LEFT,160);
 	//	InventoryResultListTable.InsertColumn(8,_T("Number of express orders"),LVCFMT_LEFT,160);
 	//	InventoryResultListTable.InsertColumn(9,_T("Proportion of items discarded"),LVCFMT_LEFT,160);
+
+
+	// refresh the list at the same time
+	int row_count = 0;
+	int column_count = 6;
+	for (std::vector<CString>* row: InventoryResultListDlg::result_columns){
+		int index = InventoryResultListTable.InsertItem(row_count,row->at(0));
+		row_count++;
+	}
 }
 
 

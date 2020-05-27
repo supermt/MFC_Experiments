@@ -1,25 +1,16 @@
-﻿Build started 2020/5/28 3:01:44.
+﻿Build started 2020/5/28 4:04:34.
      1>Project "C:\Users\18007\Documents\Visual Studio 2012\Projects\MFC_Experiments\MFC_Experiments\MFC_Experiments.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\MFC_Experiments.pch" /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt CoinFlipDlg.cpp Inv_handler.cpp InventoryDlg.cpp InventoryResultListDlg.cpp MFC_Experiments.cpp MFC_ExperimentsDlg.cpp QueueingDlg.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\MFC_Experiments.pch" /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt InventoryDlg.cpp InventoryResultListDlg.cpp
          InventoryResultListDlg.cpp
          InventoryDlg.cpp
-     1>c:\users\18007\documents\visual studio 2012\projects\mfc_experiments\mfc_experiments\inventorydlg.cpp(138): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\18007\documents\visual studio 2012\projects\mfc_experiments\mfc_experiments\inventorydlg.cpp(142): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
-     1>c:\users\18007\documents\visual studio 2012\projects\mfc_experiments\mfc_experiments\inventorydlg.cpp(147): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-         Inv_handler.cpp
-     1>c:\users\18007\documents\visual studio 2012\projects\mfc_experiments\mfc_experiments\inv_handler.cpp(83): warning C4305: '=' : truncation from 'double' to 'float'
-     1>c:\users\18007\documents\visual studio 2012\projects\mfc_experiments\mfc_experiments\inv_handler.cpp(85): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\18007\documents\visual studio 2012\projects\mfc_experiments\mfc_experiments\inv_handler.cpp(93): warning C4305: 'initializing' : truncation from 'double' to 'float'
-     1>c:\users\18007\documents\visual studio 2012\projects\mfc_experiments\mfc_experiments\inv_handler.cpp(132): warning C4305: '=' : truncation from 'double' to 'float'
-     1>c:\users\18007\documents\visual studio 2012\projects\mfc_experiments\mfc_experiments\inv_handler.cpp(168): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\18007\documents\visual studio 2012\projects\mfc_experiments\mfc_experiments\inv_handler.cpp(290): warning C4101: 'i' : unreferenced local variable
+     1>c:\users\18007\documents\visual studio 2012\projects\mfc_experiments\mfc_experiments\inventorydlg.cpp(145): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\18007\documents\visual studio 2012\projects\mfc_experiments\mfc_experiments\inventorydlg.cpp(149): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
+     1>c:\users\18007\documents\visual studio 2012\projects\mfc_experiments\mfc_experiments\inventorydlg.cpp(154): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\18007\documents\visual studio 2012\projects\mfc_experiments\mfc_experiments\inventorydlg.cpp(177): warning C4102: 'processing_result' : unreferenced label
+     1>c:\users\18007\documents\visual studio 2012\projects\mfc_experiments\mfc_experiments\inventorydlg.cpp(160): warning C4102: 'running_the_simulation' : unreferenced label
+     1>c:\users\18007\documents\visual studio 2012\projects\mfc_experiments\mfc_experiments\inventorydlg.cpp(117): warning C4102: 'data_loading_from_screen' : unreferenced label
          Generating Code...
-         Skipping... (no relevant changes detected)
-         QueueingDlg.cpp
-         MFC_ExperimentsDlg.cpp
-         MFC_Experiments.cpp
-         CoinFlipDlg.cpp
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\18007\Documents\Visual Studio 2012\Projects\MFC_Experiments\Debug\MFC_Experiments.exe" /INCREMENTAL /NOLOGO /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:"C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\Include\Manifest\dpiaware.manifest" /DEBUG /PDB:"C:\Users\18007\Documents\Visual Studio 2012\Projects\MFC_Experiments\Debug\MFC_Experiments.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /ENTRY:"wWinMainCRTStartup" /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\18007\Documents\Visual Studio 2012\Projects\MFC_Experiments\Debug\MFC_Experiments.lib" /MACHINE:X86 Debug\MFC_Experiments.res
          Debug\CoinFlipDlg.obj
@@ -37,4 +28,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.45
+Time Elapsed 00:00:01.95
