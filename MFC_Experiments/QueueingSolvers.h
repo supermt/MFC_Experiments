@@ -39,13 +39,6 @@ public:
 	virtual void initialize()=0;
 	virtual ResultHandler bootstrap(float mean_interarrival_in, float mean_service_in,float third_parameter)=0;
 
-public:
-	float lcgrand(int stream);
-	void lcgrandst(long zset, int stream);
-	long lcgrandgt(int stream);
-	void push_into_zrng(long value);
-	static std::vector<long> zrng;
-
 protected:
 	FILE  *infile, *outfile;
 	int   next_event_type, num_custs_delayed, num_events, num_in_q, server_status;

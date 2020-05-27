@@ -99,6 +99,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CoinFlipDlg.h" />
+    <ClInclude Include="RandomStream.h" />
     <ClInclude Include="QueueingSolvers.h" />
     <ClInclude Include="InventoryDlg.h" />
     <ClInclude Include="InventoryResultListDlg.h" />
@@ -111,6 +112,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CoinFlipDlg.cpp" />
+    <ClCompile Include="RandomStream.cpp" />
     <ClCompile Include="QueueingSolvers.cpp" />
     <ClCompile Include="InventoryDlg.cpp" />
     <ClCompile Include="InventoryResultListDlg.cpp" />

@@ -45,6 +45,9 @@
     <ClInclude Include="QueueingSolvers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RandomStream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MFC_Experiments.cpp">
@@ -69,6 +72,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="QueueingSolvers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RandomStream.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

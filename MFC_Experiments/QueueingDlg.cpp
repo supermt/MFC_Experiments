@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "MFC_Experiments.h"
 #include "QueueingDlg.h"
-#include "lcgrand.h"
+#include "RandomStream.h"
 #include "afxdialogex.h"
 #include "strsafe.h"
 
@@ -190,13 +190,13 @@ void QueueingDlg::run_simulation_once(int game_type,float avg_arrive,float avg_s
 void QueueingDlg::OnBnClickedRun()
 {
 	// clear all seeds
-	std::fill(QueueingClass::zrng.begin(), QueueingClass::zrng.begin(), 0);
+	std::fill(RandomGenerator::zrng.begin(), RandomGenerator::zrng.begin(), 0);
 	// get all seed from randompool
 	CString seedText;
 	for(int i = 0; i < RandomSeedPool.GetCount(); i++)
 	{
 		RandomSeedPool.GetText(i, seedText);
-		QueueingClass::zrng.insert(QueueingClass::zrng.begin(),0, _ttol(seedText));
+		RandomGenerator::zrng.insert(RandomGenerator::zrng.begin(),0, _ttol(seedText));
 	}
 
 	RunButton.EnableWindow(0);
@@ -307,7 +307,7 @@ void QueueingDlg::OnBnClickedLoadDefault()
 		memset(buffer,0,BUFFER_SIZE);
 		StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%d"), seed);
 		RandomSeedPool.AddString(buffer);
-		QueueingClass::zrng.push_back(seed);
+		RandomGenerator::zrng.push_back(seed);
 	}
 }
 
