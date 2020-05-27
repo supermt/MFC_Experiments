@@ -4,9 +4,11 @@
 #include "stdafx.h"
 #include "MFC_Experiments.h"
 #include "QueueingDlg.h"
+#include "lcgrand.h"
 #include "afxdialogex.h"
 #include "strsafe.h"
 
+#define BUFFER_SIZE 40
 
 // QueueingDlg dialog
 
@@ -14,6 +16,7 @@ IMPLEMENT_DYNAMIC(QueueingDlg, CDialogEx)
 
 	QueueingDlg::QueueingDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(QueueingDlg::IDD, pParent)
+	, Radio_origin(0)
 {
 	row_count = 0;
 }
@@ -34,7 +37,7 @@ void QueueingDlg::DoDataExchange(CDataExchange* pDX)
 
 	int column_width = 90;
 	// initial the data in result list
-	QueueingResultList.InsertColumn(0,_T("ID"),LVCFMT_LEFT,30);
+	QueueingResultList.InsertColumn(0,_T("ID"),LVCFMT_LEFT,60);
 	QueueingResultList.InsertColumn(1,_T("Average Delay"),LVCFMT_LEFT,column_width);
 	QueueingResultList.InsertColumn(2,_T("Time-Avg Number in Queue"),LVCFMT_LEFT,column_width);
 	QueueingResultList.InsertColumn(3,_T("Server Util"),LVCFMT_LEFT,column_width);
@@ -51,6 +54,29 @@ void QueueingDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, Radio_Fixed_Length,fixed_length_or_not);
 
 	DDX_Control(pDX, Button_RUN, RunButton);
+
+	RunButton.EnableWindow(0);
+	DDX_Control(pDX, IDC_LIST1, RandomSeedPool);
+	DDX_Control(pDX, INPUT_Interarrive, input_avg_interarrive);
+	DDX_Control(pDX, INPUT_time_service, input_avg_service_time);
+	DDX_Control(pDX, INPUT_customers, input_customers);
+	DDX_Control(pDX, INPUT_Simulation_length, input_simulation_length);
+	DDX_Control(pDX, INPUT_Excess_Delay, input_delay_limit);
+	DDX_Control(pDX, INPUT_Replication, input_replication_times);
+	OnBnClickedResetStream();
+	DDX_Control(pDX, INPUT_seed, input_seed);
+
+
+
+	DDX_Control(pDX, INPUT_OPEN, input_open_time);
+	DDX_Control(pDX, INPUT_Close, input_close_time);
+	DDX_Control(pDX, INPUT_Queue_Capacity, input_queue_capacity);
+	input_open_time.SetWindowText(_T("9"));
+	input_close_time.SetWindowText(_T("17"));
+	input_open_time.EnableWindow(0);
+	input_close_time.EnableWindow(0);
+	input_queue_capacity.SetWindowText(_T("1000"));
+	input_queue_capacity.EnableWindow(0);
 }
 
 
@@ -59,81 +85,99 @@ BEGIN_MESSAGE_MAP(QueueingDlg, CDialogEx)
 	ON_BN_CLICKED(Button_Clear_Result, &QueueingDlg::OnBnClickedClearResult)
 	ON_BN_CLICKED(Radio_Fixed_Customer, &QueueingDlg::OnBnClickedFixedCustomer)
 	ON_BN_CLICKED(Radio_Fixed_Length, &QueueingDlg::OnBnClickedFixedLength)
+	ON_BN_CLICKED(Button_Reset_Stream, &QueueingDlg::OnBnClickedResetStream)
+	ON_BN_CLICKED(IDC_BUTTON1, &QueueingDlg::OnBnClickedLoadDefault)
+	ON_BN_CLICKED(Clear_Seed_List, &QueueingDlg::OnBnClickedClearSeedList)
+	ON_BN_CLICKED(Button_Delete_Selected_Seed, &QueueingDlg::OnBnClickedDeleteSelectedSeed)
+	ON_BN_CLICKED(Button_Add_Seed, &QueueingDlg::OnBnClickedAddSeed)
+	ON_BN_CLICKED(IDC_TIME_RANGE, &QueueingDlg::OnBnClickedTimeRange)
+	ON_BN_CLICKED(IDC_RADIO_QUEUE_LIMITED, &QueueingDlg::OnBnClickedRadioQueueLimited)
 END_MESSAGE_MAP()
 
 
-// QueueingDlg message handlers
 
+inline void add_result_line(ResultHandler *result,CListCtrl* list_controller,int row_count,int game_type){
+	TCHAR buffer[BUFFER_SIZE];
+	memset(buffer,0,BUFFER_SIZE);
+	switch (game_type)
+	{
+	case 1:
+		StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("Fixed Customer %d"), row_count); break;
+	case 2:		
+		StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("Fixed Simulation Length %d"), row_count);break;
+	case 3:		
+		StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("Variable Serving Time %d"), row_count);break;
+	case 4:		
+		StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("Limited Delay Time %d"), row_count);break;
+	default:
+		StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("Other %d"), row_count);
+		break;
+	}
 
-void QueueingDlg::OnBnClickedCheck1()
-{
-	// TODO: Add your control notification handler code here
-}
-
-/*
-if (fixed_customer_or_not.GetCheck() == 1){
-// skip 
-return ;
-}
-
-*/
-
-inline void add_result_line(ResultHandler *result,CListCtrl* list_controller,int row_count){
-	TCHAR buffer[24];
-	memset(buffer,0,24);
-	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%d"), row_count);
 	int index = list_controller->InsertItem(row_count,buffer);
-	memset(buffer,0,24);
+	memset(buffer,0,BUFFER_SIZE);
 	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->avg_delay);
 	list_controller->SetItemText(index, 1,buffer);
-	memset(buffer,0,24);
+	memset(buffer,0,BUFFER_SIZE);
 	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->time_avg_number_in_q);
 	list_controller->SetItemText(index, 2,buffer);
-	memset(buffer,0,24);
+	memset(buffer,0,BUFFER_SIZE);
 	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->server_util);
 	list_controller->SetItemText(index, 3,buffer);
-	memset(buffer,0,24);
+	memset(buffer,0,BUFFER_SIZE);
 	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->time_avg_number_in_system);
 	list_controller->SetItemText(index, 4,buffer);
-	memset(buffer,0,24);
+	memset(buffer,0,BUFFER_SIZE);
 	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->avg_time_in_system);
 	list_controller->SetItemText(index, 5,buffer);
-	memset(buffer,0,24);
+	memset(buffer,0,BUFFER_SIZE);
 	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->queue_length_max);
 	list_controller->SetItemText(index, 6,buffer);
-	memset(buffer,0,24);
+	memset(buffer,0,BUFFER_SIZE);
 	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->max_delay_in_queue);
 	list_controller->SetItemText(index, 7,buffer);
-	memset(buffer,0,24);
+	memset(buffer,0,BUFFER_SIZE);
 	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->max_time_in_system);
 	list_controller->SetItemText(index, 8,buffer);
-	memset(buffer,0,24);
+	memset(buffer,0,BUFFER_SIZE);
 	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->propo_customers_over_1min);
 	list_controller->SetItemText(index, 9,buffer);
-	/*int index = list_controller->InsertItem(0,buffer);
-	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), 1.0f);
-	list_controller->SetItemText(index, 1,buffer);
-	*/
 }
 
-void QueueingDlg::OnBnClickedRun()
-{
+void QueueingDlg::run_simulation_once(int game_type,float avg_arrive,float avg_service,float third_para){
 	QueueingClass* result_row= nullptr;
-	RunButton.EnableWindow(0);
 	ResultHandler result;
-	if (fixed_customer_or_not.GetCheck()){
+	switch (game_type)
+	{
+	case 1:
 		result_row = new FixedCustomerQueueing();
-		result = result_row->bootstrap(1.0,0.5,1000);
+		break;
+	case 2:
+		result_row = new FixedLengthQueueing();
+		break;
+	case 3:
+		result_row = new FixedCustomerQueueing();
+		break;
+	case 4:
+		result_row = new FixedCustomerQueueing();
+		break;
+	default:
+		result_row = new FixedCustomerQueueing();
+		break;
+	}
+
+	result = result_row->bootstrap(avg_arrive,avg_service,third_para);
+	/*	if (fixed_customer_or_not.GetCheck()){
+
+	result = result_row->bootstrap(avg_arrive,avg_service,third_para);
 	}
 
 	if (fixed_length_or_not.GetCheck()){
-		result_row = new FixedLengthQueueing();
-		result = result_row->bootstrap(1.0,0.5,480.0);
-	}
 
-	add_result_line(&result,&QueueingResultList,row_count);
+	}
+	*/
+	add_result_line(&result,&QueueingResultList,row_count,game_type);
 	row_count++;
-	RunButton.EnableWindow(1);
 
 	if (!result_row){
 		return ;
@@ -141,6 +185,52 @@ void QueueingDlg::OnBnClickedRun()
 		free(result_row);
 		return ;
 	}
+}
+
+void QueueingDlg::OnBnClickedRun()
+{
+	// clear all seeds
+	std::fill(QueueingClass::zrng.begin(), QueueingClass::zrng.begin(), 0);
+	// get all seed from randompool
+	CString seedText;
+	for(int i = 0; i < RandomSeedPool.GetCount(); i++)
+	{
+		RandomSeedPool.GetText(i, seedText);
+		QueueingClass::zrng.insert(QueueingClass::zrng.begin(),0, _ttol(seedText));
+	}
+
+	RunButton.EnableWindow(0);
+
+	CString replication_cs;
+	CString avg_arrive_cs;
+	CString avg_serve_cs;
+	CString third_para_cs;
+	input_replication_times.GetWindowText(replication_cs);
+	input_avg_interarrive.GetWindowText(avg_arrive_cs);
+	input_avg_service_time.GetWindowText(avg_serve_cs);
+
+	int game_type = 0;
+	if (fixed_customer_or_not.GetCheck()){
+		game_type = 1;
+		input_customers.GetWindowText(third_para_cs);
+	}
+	if (fixed_length_or_not.GetCheck()){
+		game_type = 2;
+		input_simulation_length.GetWindowText(third_para_cs);
+	}
+	else{
+		third_para_cs="1000";
+	}
+	
+
+	int replication = _ttoi(replication_cs);
+	float avg_arrive = _ttof(avg_arrive_cs);
+	float avg_serve = _ttof(avg_serve_cs);
+	float third_para = _ttof(third_para_cs);
+	for (int i=0;i< replication; i++){
+		run_simulation_once(game_type,avg_arrive,avg_serve,third_para);
+	}
+	RunButton.EnableWindow(1);
 
 }
 
@@ -148,30 +238,138 @@ void QueueingDlg::OnBnClickedRun()
 void QueueingDlg::OnBnClickedClearResult()
 {
 	// TODO: Add your control notification handler code here
+
+	QueueingResultList.DeleteAllItems();
+	UpdateWindow();
 }
 
 
 
 void QueueingDlg::OnBnClickedFixedCustomer()
 {
+	input_open_time.EnableWindow(0);
+	input_close_time.EnableWindow(0);
+	input_queue_capacity.EnableWindow(0);
+	RunButton.EnableWindow(1);
 	// TODO: Add your control notification handler code here
 	if (fixed_customer_or_not.GetCheck()){
 		// skip 
 		fixed_customer_or_not.SetWindowText(L"Fixed Customers triggered");
 		fixed_length_or_not.SetWindowText(L"Fixed Length");
-
+		input_customers.EnableWindow(1);
+		input_simulation_length.EnableWindow(0);
 		return ;
 	}
 }
 
 
 void QueueingDlg::OnBnClickedFixedLength()
-{
+{	
+	input_open_time.EnableWindow(0);
+	input_close_time.EnableWindow(0);
+	input_queue_capacity.EnableWindow(0);
+	RunButton.EnableWindow(1);
 	// TODO: Add your control notification handler code here
 	if (fixed_length_or_not.GetCheck()){
 		// skip 
 		fixed_length_or_not.SetWindowText(L"Fixed Length triggered");
 		fixed_customer_or_not.SetWindowText(L"Fixed Customers");
+		input_customers.EnableWindow(0);
+		input_simulation_length.EnableWindow(1);
 		return ;
+
 	}
+}
+
+
+void QueueingDlg::OnBnClickedResetStream()
+{
+	// load all default seeds;
+	OnBnClickedLoadDefault();
+	input_avg_interarrive.SetWindowText(TEXT("1.0"));
+	input_avg_service_time.SetWindowText(_T("0.5"));
+	input_customers.SetWindowText(_T("1000"));
+	input_customers.EnableWindow(0);
+	input_simulation_length.SetWindowText(_T("480.0"));
+	input_simulation_length.EnableWindow(0);
+	input_delay_limit.SetWindowText(_T("N/A"));
+	input_replication_times.SetWindowText(_T("10"));
+}
+
+
+void QueueingDlg::OnBnClickedLoadDefault()
+{
+	OnBnClickedClearSeedList();
+	TCHAR buffer[BUFFER_SIZE];
+
+	// TODO: Add your control notification handler code here
+	for (auto seed : default_seeds){
+		memset(buffer,0,BUFFER_SIZE);
+		StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%d"), seed);
+		RandomSeedPool.AddString(buffer);
+		QueueingClass::zrng.push_back(seed);
+	}
+}
+
+
+void QueueingDlg::OnBnClickedClearSeedList()
+{
+	// TODO: Add your control notification handler code here
+	RandomSeedPool.ResetContent();
+	UpdateWindow();
+}
+
+
+void QueueingDlg::OnBnClickedDeleteSelectedSeed()
+{
+	// TODO: Add your control notification handler code here
+	CListBox * pList1 = (CListBox *)GetDlgItem(IDC_LIST1);
+
+	int nSel = pList1->GetCurSel();
+	if (nSel != LB_ERR)
+	{
+		CString ItemSelected; 
+		pList1->GetText(nSel, ItemSelected);
+		pList1->DeleteString(nSel);
+	}
+}
+
+
+void QueueingDlg::OnBnClickedAddSeed()
+{
+	// TODO: Add your control notification handler code here
+	CString newSeed;
+	input_seed.GetWindowText(newSeed);
+	if (newSeed.IsEmpty()) AfxMessageBox(_T("Empty Seed"));
+	else RandomSeedPool.AddString(newSeed);
+}
+
+
+void QueueingDlg::OnBnClickedLimiting()
+{
+	// TODO: Add your control notification handler code here
+
+}
+
+
+void QueueingDlg::OnBnClickedTimeRange()
+{
+	// TODO: Add your control notification handler code here
+	input_open_time.EnableWindow(1);
+	input_close_time.EnableWindow(1);
+
+	input_queue_capacity.EnableWindow(0);
+	RunButton.EnableWindow(1);
+
+}
+
+
+void QueueingDlg::OnBnClickedRadioQueueLimited()
+{
+	// TODO: Add your control notification handler code here
+	input_open_time.EnableWindow(0);
+	input_close_time.EnableWindow(0);
+	input_queue_capacity.EnableWindow(1);
+	RunButton.EnableWindow(1);
+
 }

@@ -42,9 +42,6 @@
     <ClInclude Include="InventoryResultListDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="lcgrand.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="QueueingSolvers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -69,9 +66,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="InventoryResultListDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lcgrand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="QueueingSolvers.cpp">

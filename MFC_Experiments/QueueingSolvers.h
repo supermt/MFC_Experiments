@@ -1,12 +1,16 @@
 #pragma once
 
-#include "lcgrand.h"
 #include <math.h>
 #include <vector>
-
-#define Q_LIMIT 100  /* Limit on queue length. */
+#define MODLUS 2147483647
+#define MULT1       24112
+#define MULT2       26143
+#define Q_LIMIT 1000  /* Limit on queue length. */
 #define BUSY      1  /* Mnemonics for server's being busy */
 #define IDLE      0  /* and idle. */
+
+
+extern long default_seeds[101];
 
 struct ResultHandler{
 public:
@@ -34,7 +38,14 @@ public:
 	void depart(void);
 	virtual void initialize()=0;
 	virtual ResultHandler bootstrap(float mean_interarrival_in, float mean_service_in,float third_parameter)=0;
-	
+
+public:
+	float lcgrand(int stream);
+	void lcgrandst(long zset, int stream);
+	long lcgrandgt(int stream);
+	void push_into_zrng(long value);
+	static std::vector<long> zrng;
+
 protected:
 	FILE  *infile, *outfile;
 	int   next_event_type, num_custs_delayed, num_events, num_in_q, server_status;
@@ -45,7 +56,7 @@ protected:
 	std::vector<float> queue_length_vec;
 	std::vector<float> serve_vec;
 	std::vector<float> overall_vec;
-	
+
 };
 
 class FixedCustomerQueueing :public QueueingClass

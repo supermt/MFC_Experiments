@@ -104,7 +104,6 @@
     <ClInclude Include="InventoryResultListDlg.h" />
     <ClInclude Include="MFC_Experiments.h" />
     <ClInclude Include="MFC_ExperimentsDlg.h" />
-    <ClInclude Include="lcgrand.h" />
     <ClInclude Include="QueueingDlg.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -117,7 +116,6 @@
     <ClCompile Include="InventoryResultListDlg.cpp" />
     <ClCompile Include="MFC_Experiments.cpp" />
     <ClCompile Include="MFC_ExperimentsDlg.cpp" />
-    <ClCompile Include="lcgrand.cpp" />
     <ClCompile Include="QueueingDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
