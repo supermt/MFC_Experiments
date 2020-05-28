@@ -209,7 +209,7 @@ void InventoryDlg::OnBnClickedRunBtn()
 	}
 
 
-
+	OnBnClickedPopResult();
 	RunButton.SetWindowTextW(_T("Run"));
 	RunButton.EnableWindow(1);
 }
