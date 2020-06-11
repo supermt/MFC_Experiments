@@ -18,7 +18,7 @@ public:
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-
+	std::vector<std::vector<float>> result_lines;
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnBnClickedCheck1();
@@ -31,6 +31,7 @@ public:
 	afx_msg void OnBnClickedFixedLength();
 	int row_count;
 	CButton RunButton;
+	void add_result_line(ResultHandler *result,CListCtrl* list_controller,int row_count,int game_type);
 	CListBox RandomSeedPool;
 	afx_msg void OnBnClickedResetStream();
 	afx_msg void OnBnClickedLoadDefault();

@@ -7,6 +7,8 @@
 #include "RandomStream.h"
 #include "afxdialogex.h"
 #include "strsafe.h"
+#include <numeric>
+
 
 #define BUFFER_SIZE 40
 
@@ -24,6 +26,7 @@ IMPLEMENT_DYNAMIC(QueueingDlg, CDialogEx)
 	for (auto seed : default_seeds){
 		RandomGenerator::zrng.push_back(seed);
 	}
+	result_lines = std::vector<std::vector<float>>();
 }
 
 QueueingDlg::~QueueingDlg()
@@ -50,14 +53,23 @@ void QueueingDlg::DoDataExchange(CDataExchange* pDX)
 	// initial the data in result list
 	QueueingResultList.InsertColumn(0,_T("ID"),LVCFMT_LEFT,60);
 	QueueingResultList.InsertColumn(1,_T("Average Delay"),LVCFMT_LEFT,column_width);
+	result_lines.push_back(std::vector<float>());
 	QueueingResultList.InsertColumn(2,_T("Time-Avg Number in Queue"),LVCFMT_LEFT,column_width);
+	result_lines.push_back(std::vector<float>());
 	QueueingResultList.InsertColumn(3,_T("Server Util"),LVCFMT_LEFT,column_width);
+	result_lines.push_back(std::vector<float>());
 	QueueingResultList.InsertColumn(4,_T("Time-Avg Number in System"),LVCFMT_LEFT,column_width);
+	result_lines.push_back(std::vector<float>());
 	QueueingResultList.InsertColumn(5,_T("Average Time in System"),LVCFMT_LEFT,column_width);
+	result_lines.push_back(std::vector<float>());
 	QueueingResultList.InsertColumn(6,_T("Max Queue Length"),LVCFMT_LEFT,column_width);
+	result_lines.push_back(std::vector<float>());
 	QueueingResultList.InsertColumn(7,_T("Max Time in Queue"),LVCFMT_LEFT,column_width);
+	result_lines.push_back(std::vector<float>());
 	QueueingResultList.InsertColumn(8,_T("Max Time in System"),LVCFMT_LEFT,column_width);
+	result_lines.push_back(std::vector<float>());
 	QueueingResultList.InsertColumn(9,_T("Proporation of Customers over 1 mins"),LVCFMT_LEFT,column_width);
+	result_lines.push_back(std::vector<float>());
 	//QueueingResultList.InsertColumn(9,_T("The ma"),LVCFMT_LEFT,column_width);
 	//	QueueingResultList.InsertColumn(10,_T("Balk"),LVCFMT_LEFT,column_width);
 
@@ -107,7 +119,7 @@ END_MESSAGE_MAP()
 
 
 
-inline void add_result_line(ResultHandler *result,CListCtrl* list_controller,int row_count,int game_type){
+void QueueingDlg::add_result_line(ResultHandler *result,CListCtrl* list_controller,int row_count,int game_type){
 	TCHAR buffer[BUFFER_SIZE];
 	memset(buffer,0,BUFFER_SIZE);
 	switch (game_type)
@@ -128,30 +140,46 @@ inline void add_result_line(ResultHandler *result,CListCtrl* list_controller,int
 	int index = list_controller->InsertItem(row_count,buffer);
 	memset(buffer,0,BUFFER_SIZE);
 	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->avg_delay);
+	result_lines[0].push_back(result->avg_delay);
 	list_controller->SetItemText(index, 1,buffer);
 	memset(buffer,0,BUFFER_SIZE);
 	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->time_avg_number_in_q);
+	result_lines[1].push_back(result->time_avg_number_in_q);
 	list_controller->SetItemText(index, 2,buffer);
 	memset(buffer,0,BUFFER_SIZE);
+
 	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->server_util);
+	result_lines[2].push_back(result->server_util);
 	list_controller->SetItemText(index, 3,buffer);
 	memset(buffer,0,BUFFER_SIZE);
+	
 	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->time_avg_number_in_system);
 	list_controller->SetItemText(index, 4,buffer);
+	result_lines[3].push_back(result->time_avg_number_in_system);
 	memset(buffer,0,BUFFER_SIZE);
+
 	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->avg_time_in_system);
+	result_lines[4].push_back(result->avg_time_in_system);
 	list_controller->SetItemText(index, 5,buffer);
 	memset(buffer,0,BUFFER_SIZE);
+
+
 	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->queue_length_max);
+	result_lines[5].push_back(result->queue_length_max);
 	list_controller->SetItemText(index, 6,buffer);
 	memset(buffer,0,BUFFER_SIZE);
+
 	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->max_delay_in_queue);
 	list_controller->SetItemText(index, 7,buffer);
+	result_lines[6].push_back(result->max_delay_in_queue);
 	memset(buffer,0,BUFFER_SIZE);
+	
 	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->max_time_in_system);
 	list_controller->SetItemText(index, 8,buffer);
+	result_lines[7].push_back(result->max_time_in_system);
 	memset(buffer,0,BUFFER_SIZE);
 	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->propo_customers_over_1min);
+	result_lines[8].push_back(result->propo_customers_over_1min);
 	list_controller->SetItemText(index, 9,buffer);
 }
 
@@ -189,6 +217,24 @@ void QueueingDlg::run_simulation_once(int seed,int game_type,float avg_arrive,fl
 	*/
 	add_result_line(&result,&QueueingResultList,row_count,game_type);
 	row_count++;
+	CString tmp;
+	int index = QueueingResultList.InsertItem(row_count,_T(" "));
+
+	int index_mean = QueueingResultList.InsertItem(row_count+1,_T("Mean of index"));
+	int index_stdev = QueueingResultList.InsertItem(row_count+2,_T("Stdev of index"));
+
+	for (int i = 0;i <result_lines.size(); i++){
+		std::vector<float> v = result_lines[i];
+		double sum = std::accumulate(v.begin(), v.end(), 0.0);
+		double mean = sum / v.size();
+		double sq_sum = std::inner_product(v.begin(), v.end(), v.begin(), 0.0);
+		double stdev = std::sqrt(sq_sum / v.size() - mean * mean);
+		tmp.Format(_T("%.2f"),mean);
+		QueueingResultList.SetItemText(index_mean, i+1,tmp);
+		tmp.Format(_T("%.2f"),stdev);
+		QueueingResultList.SetItemText(index_stdev, i+1,tmp);
+
+	}
 
 	if (!result_row){
 		return ;
@@ -211,6 +257,8 @@ void QueueingDlg::OnBnClickedRun()
 		// RandomGenerator::zrng.insert(RandomGenerator::zrng.begin(),0, _ttol(seedText));
 		seed_list.push_back(_ttoi(seedText) %100 +1);
 	}
+
+
 
 	RunButton.EnableWindow(0);
 
