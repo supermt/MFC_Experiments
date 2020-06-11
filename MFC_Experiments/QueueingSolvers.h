@@ -38,6 +38,7 @@ public:
 	void depart(void);
 	virtual void initialize()=0;
 	virtual ResultHandler bootstrap(float mean_interarrival_in, float mean_service_in,float third_parameter)=0;
+	int random_seed;
 
 protected:
 	FILE  *infile, *outfile;

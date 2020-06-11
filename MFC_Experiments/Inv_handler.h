@@ -42,7 +42,8 @@ public:
 	void  update_time_avg_stats(void);
 	float expon(float mean);
 	int   random_integer(float prob_distrib []);
-	float uniform(float a, float b);
+	float uniform(float a, float b);	
+	int random_seed;
 };
 
 

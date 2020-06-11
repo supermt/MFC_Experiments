@@ -19,13 +19,21 @@ IMPLEMENT_DYNAMIC(QueueingDlg, CDialogEx)
 	, Radio_origin(0)
 {
 	row_count = 0;
+	seed_list = std::vector<int>();
+	
+	for (auto seed : default_seeds){
+		RandomGenerator::zrng.push_back(seed);
+	}
 }
 
 QueueingDlg::~QueueingDlg()
 {	
-	for (auto seed : default_seeds){
-		RandomGenerator::zrng.push_back(seed);
-	}
+}
+
+void QueueingDlg::SetRepText(){
+	CString input_rep_cs;
+	input_rep_cs.Format(_T("%d"),seed_list.size());
+	input_replication_times.SetWindowText(input_rep_cs);
 }
 
 void QueueingDlg::DoDataExchange(CDataExchange* pDX)
@@ -147,7 +155,7 @@ inline void add_result_line(ResultHandler *result,CListCtrl* list_controller,int
 	list_controller->SetItemText(index, 9,buffer);
 }
 
-void QueueingDlg::run_simulation_once(int game_type,float avg_arrive,float avg_service,float third_para){
+void QueueingDlg::run_simulation_once(int seed,int game_type,float avg_arrive,float avg_service,float third_para){
 	QueueingClass* result_row= nullptr;
 	ResultHandler result;
 	switch (game_type)
@@ -168,7 +176,7 @@ void QueueingDlg::run_simulation_once(int game_type,float avg_arrive,float avg_s
 		result_row = new FixedCustomerQueueing();
 		break;
 	}
-
+	result_row->random_seed = seed;
 	result = result_row->bootstrap(avg_arrive,avg_service,third_para);
 	/*	if (fixed_customer_or_not.GetCheck()){
 
@@ -196,10 +204,12 @@ void QueueingDlg::OnBnClickedRun()
 	std::fill(RandomGenerator::zrng.begin(), RandomGenerator::zrng.begin(), 0);
 	// get all seed from randompool
 	CString seedText;
+	seed_list.clear();
 	for(int i = 0; i < RandomSeedPool.GetCount(); i++)
 	{
 		RandomSeedPool.GetText(i, seedText);
-		RandomGenerator::zrng.insert(RandomGenerator::zrng.begin(),0, _ttol(seedText));
+		// RandomGenerator::zrng.insert(RandomGenerator::zrng.begin(),0, _ttol(seedText));
+		seed_list.push_back(_ttoi(seedText) %100 +1);
 	}
 
 	RunButton.EnableWindow(0);
@@ -230,8 +240,8 @@ void QueueingDlg::OnBnClickedRun()
 	float avg_arrive = _ttof(avg_arrive_cs);
 	float avg_serve = _ttof(avg_serve_cs);
 	float third_para = _ttof(third_para_cs);
-	for (int i=0;i< replication; i++){
-		run_simulation_once(game_type,avg_arrive,avg_serve,third_para);
+	for (int run_seed : seed_list){
+		run_simulation_once(run_seed, game_type,avg_arrive,avg_serve,third_para);
 	}
 	RunButton.EnableWindow(1);
 
@@ -289,6 +299,7 @@ void QueueingDlg::OnBnClickedResetStream()
 {
 	// load all default seeds;
 	OnBnClickedLoadDefault();
+
 	input_avg_interarrive.SetWindowText(TEXT("1.0"));
 	input_avg_service_time.SetWindowText(_T("0.5"));
 	input_customers.SetWindowText(_T("1000"));
@@ -296,13 +307,13 @@ void QueueingDlg::OnBnClickedResetStream()
 	input_simulation_length.SetWindowText(_T("480.0"));
 	input_simulation_length.EnableWindow(0);
 	input_delay_limit.SetWindowText(_T("N/A"));
-	input_replication_times.SetWindowText(_T("10"));
 }
 
 
 void QueueingDlg::OnBnClickedLoadDefault()
 {
 	OnBnClickedClearSeedList();
+	/*
 	TCHAR buffer[BUFFER_SIZE];
 
 	// TODO: Add your control notification handler code here
@@ -312,6 +323,7 @@ void QueueingDlg::OnBnClickedLoadDefault()
 		RandomSeedPool.AddString(buffer);
 		RandomGenerator::zrng.push_back(seed);
 	}
+	*/
 }
 
 
@@ -319,6 +331,8 @@ void QueueingDlg::OnBnClickedClearSeedList()
 {
 	// TODO: Add your control notification handler code here
 	RandomSeedPool.ResetContent();
+	seed_list.clear();
+	SetRepText();
 	UpdateWindow();
 }
 
@@ -334,7 +348,9 @@ void QueueingDlg::OnBnClickedDeleteSelectedSeed()
 		CString ItemSelected; 
 		pList1->GetText(nSel, ItemSelected);
 		pList1->DeleteString(nSel);
+		seed_list.erase(seed_list.begin()+nSel);
 	}
+	SetRepText();
 }
 
 
@@ -344,7 +360,11 @@ void QueueingDlg::OnBnClickedAddSeed()
 	CString newSeed;
 	input_seed.GetWindowText(newSeed);
 	if (newSeed.IsEmpty()) AfxMessageBox(_T("Empty Seed"));
-	else RandomSeedPool.AddString(newSeed);
+	else {
+		RandomSeedPool.AddString(newSeed);
+		seed_list.push_back(_ttoi(newSeed) % 100 + 1);
+		SetRepText();
+	}
 }
 
 

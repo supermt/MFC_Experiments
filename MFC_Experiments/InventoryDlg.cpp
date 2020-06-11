@@ -23,6 +23,7 @@ IMPLEMENT_DYNAMIC(InventoryDlg, CDialogEx)
 	current_policy_list.clear();
 	policy_count = 0;
 	id_counter=0;
+	seed_list= std::vector<int>();
 }
 inline void elimate_free_pointers(){
 
@@ -82,7 +83,6 @@ BEGIN_MESSAGE_MAP(InventoryDlg, CDialogEx)
 	ON_BN_CLICKED(INV_DELETE_ALL_BTN, &InventoryDlg::OnBnClickedDeleteAllBtn)
 	ON_BN_CLICKED(INV_DELETE_SINGLE_BTN, &InventoryDlg::OnBnClickedDeleteSingleBtn)
 	ON_BN_CLICKED(INV_ADD_SEED_BTN, &InventoryDlg::OnBnClickedAddSeedBtn)
-	ON_BN_CLICKED(INV_LOAD_DEFAULT_BTN, &InventoryDlg::OnBnClickedLoadDefaultBtn)
 	ON_BN_CLICKED(INV_INITIAL_BTN, &InventoryDlg::OnBnClickedInitialBtn)
 	ON_BN_CLICKED(INV_GEN_POLICY_BTN, &InventoryDlg::OnBnClickedGenPolicyBtn)
 END_MESSAGE_MAP()
@@ -102,21 +102,24 @@ void InventoryDlg::OnBnClickedRunBtn()
 {
 	// TODO: Add your control notification handler code here
 	// clear all seeds
-
+	InventoryResultListDlg::result_columns.clear();
 	RunButton.EnableWindow(0);
 	RunButton.SetWindowTextW(_T("waiting for running"));
 	std::fill(RandomGenerator::zrng.begin(), RandomGenerator::zrng.begin(), 0);
 	// get all seed from randompool
 	CString seedText;
+
+	seed_list.clear();
 	for(int i = 0; i < RandomSeedPool.GetCount(); i++)
 	{
 		RandomSeedPool.GetText(i, seedText);
-		RandomGenerator::zrng.insert(RandomGenerator::zrng.begin(),0, _ttol(seedText));
+//		RandomGenerator::zrng.insert(RandomGenerator::zrng.begin(),0, _ttol(seedText));
+		seed_list.push_back(_ttoi(seedText)%100 +1 ); // can't over 100
 	}
 	CString repeat_times_cs;
 	input_rep.GetWindowTextW(repeat_times_cs);
 	int repeat_times = _ttoi(repeat_times_cs);
-	for (int round =0; round < repeat_times; round++){
+	for (int run_seed : seed_list){
 		id_counter++;
 
 		{
@@ -144,7 +147,7 @@ void InventoryDlg::OnBnClickedRunBtn()
 			input_minlag.GetWindowText(minlag_cs);
 			input_maxlag.GetWindowText(maxlag_cs);
 			input_num_policies.GetWindowText(num_policies_cs);
-
+			this->data_handler.random_seed = run_seed;
 			this->data_handler.set_parameters(_ttoi(initial_inv_level_cs),_ttoi(num_months_cs),_ttoi(num_policies_cs),_ttoi(num_values_demand_cs),
 				_ttof(mean_interdemand_cs),_ttof(setup_cost_cs),_ttof(incremental_cost_cs),_ttof(holding_cost_cs),
 				_ttof(shortage_cost_cs),_ttof(minlag_cs),_ttof(maxlag_cs));
@@ -219,6 +222,7 @@ void InventoryDlg::OnBnClickedResetZrng()
 {
 	// TODO: Add your control notification handler code here
 	OnBnClickedDeleteAllBtn();
+	/*
 	TCHAR buffer[BUFFER_SIZE];
 
 	// TODO: Add your control notification handler code here
@@ -228,13 +232,19 @@ void InventoryDlg::OnBnClickedResetZrng()
 		RandomSeedPool.AddString(buffer);
 		RandomGenerator::zrng.push_back(seed);
 	}
+	*/
 }
 
+void InventoryDlg::SetRepText(){
+	CString input_rep_cs;
+	input_rep_cs.Format(_T("%d"),seed_list.size());
+	input_rep.SetWindowText(input_rep_cs);
+}
 
 void InventoryDlg::OnBnClickedDeleteAllBtn()
 {
-	// TODO: Add your control notification handler code here
 	RandomSeedPool.ResetContent();
+	SetRepText();
 	UpdateWindow();
 }
 
@@ -250,7 +260,9 @@ void InventoryDlg::OnBnClickedDeleteSingleBtn()
 		CString ItemSelected; 
 		pList1->GetText(nSel, ItemSelected);
 		pList1->DeleteString(nSel);
+		seed_list.erase(seed_list.begin()+nSel);
 	}
+	SetRepText();
 }
 
 
@@ -260,10 +272,15 @@ void InventoryDlg::OnBnClickedAddSeedBtn()
 	CString newSeed;
 	input_seed.GetWindowText(newSeed);
 	if (newSeed.IsEmpty()) AfxMessageBox(_T("Empty Seed"));
-	else RandomSeedPool.AddString(newSeed);
+	else {	
+		RandomSeedPool.AddString(newSeed);
+		seed_list.push_back(_ttoi(newSeed));
+	}
+	SetRepText();
+
 }
 
-
+/*
 void InventoryDlg::OnBnClickedLoadDefaultBtn()
 {
 	// TODO: Add your control notification handler code here
@@ -278,7 +295,7 @@ void InventoryDlg::OnBnClickedLoadDefaultBtn()
 		RandomGenerator::zrng.push_back(seed);
 	}
 }
-
+*/
 
 inline void addPolicy(int small_head,int big_head,int policy_count,CListCtrl* policy_list_controller,std::vector<Policy> *policies)
 {
@@ -301,8 +318,7 @@ void InventoryDlg::OnBnClickedInitialBtn()
 {
 	elimate_free_pointers();
 	// TODO: Add your control notification handler code here
-	OnBnClickedLoadDefaultBtn();
-	input_rep.SetWindowText(_T("10"));
+	input_rep.SetWindowText(_T("0"));
 	input_initial_inv_level.SetWindowText(_T("60"));
 	input_num_months.SetWindowText(_T("120"));
 	input_num_values_demand.SetWindowText(_T("4"));

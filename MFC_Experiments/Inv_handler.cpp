@@ -19,6 +19,7 @@ InvReporter::~InvReporter()
 
 Inv_handler::Inv_handler()
 {
+	random_seed = 1;
 }
 
 
@@ -216,7 +217,7 @@ float Inv_handler::expon(float mean)  /* Exponential variate generation function
 {
 	/* Return an exponential random variate with mean "mean". */
 
-	return -mean * log(RandomGenerator::lcgrand(1));
+	return -mean * log(RandomGenerator::lcgrand(random_seed));
 }
 
 

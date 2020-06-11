@@ -34,7 +34,7 @@ public:
 	CListBox RandomSeedPool;
 	afx_msg void OnBnClickedResetStream();
 	afx_msg void OnBnClickedLoadDefault();
-	void run_simulation_once(int game_type,float avg_arrive,float avg_service,float third_para);
+	void run_simulation_once(int seed,int game_type,float avg_arrive,float avg_service,float third_para);
 	afx_msg void OnBnClickedClearSeedList();
 	CEdit input_avg_interarrive;
 	CEdit input_avg_service_time;
@@ -52,4 +52,6 @@ public:
 	CEdit input_queue_capacity;
 	afx_msg void OnBnClickedTimeRange();
 	afx_msg void OnBnClickedRadioQueueLimited();
+	void SetRepText();
+	std::vector<int> seed_list;
 };

@@ -39,12 +39,13 @@ public:
 	afx_msg void OnBnClickedRunBtn();
 	CListBox RandomSeedPool;
 	CButton RunButton;
+	void SetRepText();
 	afx_msg void OnBnClickedResetZrng();
 	afx_msg void OnBnClickedDeleteAllBtn();
 	afx_msg void OnBnClickedDeleteSingleBtn();
 	afx_msg void OnBnClickedAddSeedBtn();
 	CEdit input_seed;
-	afx_msg void OnBnClickedLoadDefaultBtn();
+	//afx_msg void OnBnClickedLoadDefaultBtn();
 	Inv_handler data_handler;
 	afx_msg void OnBnClickedInitialBtn();
 	CEdit input_rep;
@@ -67,4 +68,6 @@ public:
 	CEdit input_bigs;
 	CEdit input_smalls;
 	std::vector<Policy> current_policy_list;
+	std::vector<int> seed_list;
+
 };

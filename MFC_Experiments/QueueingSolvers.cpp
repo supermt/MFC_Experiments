@@ -12,6 +12,7 @@ QueueingClass::QueueingClass(){
 	queue_length_vec = std::vector<float>();
 	serve_vec = std::vector<float>();
 	overall_vec = std::vector<float>();
+	random_seed = 1;
 }
 FixedCustomerQueueing::FixedCustomerQueueing(){
 	fopen_s(&outfile,"mm1.out", "w");
@@ -30,7 +31,7 @@ FixedLengthQueueing::~FixedLengthQueueing(){
 }
 
 float QueueingClass::expon(float mean){
-	return -mean * log(RandomGenerator::lcgrand(1));
+	return -mean * log(RandomGenerator::lcgrand(random_seed));
 }
 
 
