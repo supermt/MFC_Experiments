@@ -51,34 +51,39 @@ void QueueingDlg::DoDataExchange(CDataExchange* pDX)
 
 	int column_width = 90;
 	// initial the data in result list
-	QueueingResultList.InsertColumn(0,_T("ID"),LVCFMT_LEFT,60);
-	QueueingResultList.InsertColumn(1,_T("Average Delay"),LVCFMT_LEFT,column_width);
+	QueueingResultList.InsertColumn(0,_T("Simulation"),LVCFMT_CENTER,105);
+
+	QueueingResultList.InsertColumn(1,_T("Average Delay"),LVCFMT_CENTER,105);
 	result_lines.push_back(std::vector<float>());
-	QueueingResultList.InsertColumn(2,_T("Time-Avg Number in Queue"),LVCFMT_LEFT,column_width);
+	QueueingResultList.InsertColumn(2,_T("Average Number"),LVCFMT_CENTER,105);
 	result_lines.push_back(std::vector<float>());
-	QueueingResultList.InsertColumn(3,_T("Server Util"),LVCFMT_LEFT,column_width);
+	QueueingResultList.InsertColumn(3,_T("The time-average number in the system"),LVCFMT_CENTER,105);
 	result_lines.push_back(std::vector<float>());
-	QueueingResultList.InsertColumn(4,_T("Time-Avg Number in System"),LVCFMT_LEFT,column_width);
+	QueueingResultList.InsertColumn(4,_T("The average total time in the sysstem"),LVCFMT_CENTER,105);
 	result_lines.push_back(std::vector<float>());
-	QueueingResultList.InsertColumn(5,_T("Average Time in System"),LVCFMT_LEFT,column_width);
+	QueueingResultList.InsertColumn(5,_T("The maximum queue length"),LVCFMT_CENTER,105);
 	result_lines.push_back(std::vector<float>());
-	QueueingResultList.InsertColumn(6,_T("Max Queue Length"),LVCFMT_LEFT,column_width);
+	QueueingResultList.InsertColumn(6,_T("The maximum delay in queue"),LVCFMT_CENTER,105);
 	result_lines.push_back(std::vector<float>());
-	QueueingResultList.InsertColumn(7,_T("Max Time in Queue"),LVCFMT_LEFT,column_width);
+	QueueingResultList.InsertColumn(7,_T("The maximum time in system"),LVCFMT_CENTER,105);
 	result_lines.push_back(std::vector<float>());
-	QueueingResultList.InsertColumn(8,_T("Max Time in System"),LVCFMT_LEFT,column_width);
+	QueueingResultList.InsertColumn(8,_T("The proportion of customers having a delay in excess"),LVCFMT_CENTER,105);
 	result_lines.push_back(std::vector<float>());
-	QueueingResultList.InsertColumn(9,_T("Proporation of Customers over 1 mins"),LVCFMT_LEFT,column_width);
+	QueueingResultList.InsertColumn(9,_T("Service Utilization"),LVCFMT_CENTER,105);
 	result_lines.push_back(std::vector<float>());
-	//QueueingResultList.InsertColumn(9,_T("The ma"),LVCFMT_LEFT,column_width);
-	//	QueueingResultList.InsertColumn(10,_T("Balk"),LVCFMT_LEFT,column_width);
+	QueueingResultList.InsertColumn(10,_T("Time simulation"),LVCFMT_CENTER,105);
+	result_lines.push_back(std::vector<float>());
+	QueueingResultList.InsertColumn(11,_T("Balk"),LVCFMT_CENTER,105);
+	result_lines.push_back(std::vector<float>());
 
 	DDX_Control(pDX, Radio_Fixed_Customer, fixed_customer_or_not);
 	DDX_Control(pDX, Radio_Fixed_Length,fixed_length_or_not);
+	DDX_Control(pDX, IDC_TIME_RANGE, limit_open_time_or_not);
+	DDX_Control(pDX, IDC_RADIO_QUEUE_LIMITED,limit_capacity_or_not);
 
 	DDX_Control(pDX, Button_RUN, RunButton);
 
-	RunButton.EnableWindow(0);
+//	RunButton.EnableWindow(0);
 	DDX_Control(pDX, IDC_LIST1, RandomSeedPool);
 	DDX_Control(pDX, INPUT_Interarrive, input_avg_interarrive);
 	DDX_Control(pDX, INPUT_time_service, input_avg_service_time);
@@ -125,15 +130,15 @@ void QueueingDlg::add_result_line(ResultHandler *result,CListCtrl* list_controll
 	switch (game_type)
 	{
 	case 1:
-		StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("Fixed Customer %d"), row_count); break;
+		StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("Fixed Customer %d"), result->seed); break;
 	case 2:		
-		StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("Fixed Simulation Length %d"), row_count);break;
+		StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("Fixed Simulation Length %d"), result->seed);break;
 	case 3:		
-		StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("Variable Serving Time %d"), row_count);break;
+		StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("Limited Serving Time %d"), result->seed);break;
 	case 4:		
-		StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("Limited Delay Time %d"), row_count);break;
+		StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("Limited Capacity %d"), result->seed);break;
 	default:
-		StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("Other %d"), row_count);
+		StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("Other %d"), result->seed);
 		break;
 	}
 
@@ -143,105 +148,63 @@ void QueueingDlg::add_result_line(ResultHandler *result,CListCtrl* list_controll
 	result_lines[0].push_back(result->avg_delay);
 	list_controller->SetItemText(index, 1,buffer);
 	memset(buffer,0,BUFFER_SIZE);
-	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->time_avg_number_in_q);
-	result_lines[1].push_back(result->time_avg_number_in_q);
+	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->avg_number);
+	result_lines[1].push_back(result->avg_number);
 	list_controller->SetItemText(index, 2,buffer);
 	memset(buffer,0,BUFFER_SIZE);
 
-	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->server_util);
-	result_lines[2].push_back(result->server_util);
+	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->avg_time_num_in_sys);
+	result_lines[2].push_back(result->avg_time_num_in_sys);
 	list_controller->SetItemText(index, 3,buffer);
 	memset(buffer,0,BUFFER_SIZE);
 	
-	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->time_avg_number_in_system);
+	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->avg_total_time_in_sys);
 	list_controller->SetItemText(index, 4,buffer);
-	result_lines[3].push_back(result->time_avg_number_in_system);
+	result_lines[3].push_back(result->avg_total_time_in_sys);
 	memset(buffer,0,BUFFER_SIZE);
 
-	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->avg_time_in_system);
-	result_lines[4].push_back(result->avg_time_in_system);
+	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->max_queue_length);
+	result_lines[4].push_back(result->max_queue_length);
 	list_controller->SetItemText(index, 5,buffer);
 	memset(buffer,0,BUFFER_SIZE);
 
 
-	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->queue_length_max);
-	result_lines[5].push_back(result->queue_length_max);
+	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->max_delay_in_queue);
+	result_lines[5].push_back(result->max_delay_in_queue);
 	list_controller->SetItemText(index, 6,buffer);
 	memset(buffer,0,BUFFER_SIZE);
 
-	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->max_delay_in_queue);
+	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->max_time_int_sys);
 	list_controller->SetItemText(index, 7,buffer);
-	result_lines[6].push_back(result->max_delay_in_queue);
+	result_lines[6].push_back(result->max_time_int_sys);
 	memset(buffer,0,BUFFER_SIZE);
 	
-	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->max_time_in_system);
+	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->prop_cus_delay_excess);
 	list_controller->SetItemText(index, 8,buffer);
-	result_lines[7].push_back(result->max_time_in_system);
+	result_lines[7].push_back(result->prop_cus_delay_excess);
 	memset(buffer,0,BUFFER_SIZE);
-	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->propo_customers_over_1min);
-	result_lines[8].push_back(result->propo_customers_over_1min);
+	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->server_util);
+	result_lines[8].push_back(result->server_util);
 	list_controller->SetItemText(index, 9,buffer);
+	memset(buffer,0,BUFFER_SIZE);
+	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->sim_tim);
+	result_lines[9].push_back(result->sim_tim);
+	list_controller->SetItemText(index, 10,buffer);
+	memset(buffer,0,BUFFER_SIZE);
+	StringCchPrintf(buffer, sizeof(buffer)/sizeof(TCHAR), _T("%20.2f"), result->balk);
+	result_lines[10].push_back(result->balk);
+	list_controller->SetItemText(index, 11,buffer);
 }
 
-void QueueingDlg::run_simulation_once(int seed,int game_type,float avg_arrive,float avg_service,float third_para){
-	QueueingClass* result_row= nullptr;
+void QueueingDlg::run_simulation_once(QueueingClass* result_row,int seed,int game_type,float avg_arrive,float avg_service,float third_para){
+	
 	ResultHandler result;
-	switch (game_type)
-	{
-	case 1:
-		result_row = new FixedCustomerQueueing();
-		break;
-	case 2:
-		result_row = new FixedLengthQueueing();
-		break;
-	case 3:
-		result_row = new FixedCustomerQueueing();
-		break;
-	case 4:
-		result_row = new FixedCustomerQueueing();
-		break;
-	default:
-		result_row = new FixedCustomerQueueing();
-		break;
-	}
-	result_row->random_seed = seed;
+	result.seed = seed;
+	result_row->seed = seed;
+	result_row->initialize(seed);
 	result = result_row->bootstrap(avg_arrive,avg_service,third_para);
-	/*	if (fixed_customer_or_not.GetCheck()){
-
-	result = result_row->bootstrap(avg_arrive,avg_service,third_para);
-	}
-
-	if (fixed_length_or_not.GetCheck()){
-
-	}
-	*/
 	add_result_line(&result,&QueueingResultList,row_count,game_type);
 	row_count++;
-	CString tmp;
-	int index = QueueingResultList.InsertItem(row_count,_T(" "));
-
-	int index_mean = QueueingResultList.InsertItem(row_count+1,_T("Mean of index"));
-	int index_stdev = QueueingResultList.InsertItem(row_count+2,_T("Stdev of index"));
-
-	for (int i = 0;i <result_lines.size(); i++){
-		std::vector<float> v = result_lines[i];
-		double sum = std::accumulate(v.begin(), v.end(), 0.0);
-		double mean = sum / v.size();
-		double sq_sum = std::inner_product(v.begin(), v.end(), v.begin(), 0.0);
-		double stdev = std::sqrt(sq_sum / v.size() - mean * mean);
-		tmp.Format(_T("%.2f"),mean);
-		QueueingResultList.SetItemText(index_mean, i+1,tmp);
-		tmp.Format(_T("%.2f"),stdev);
-		QueueingResultList.SetItemText(index_stdev, i+1,tmp);
-
-	}
-
-	if (!result_row){
-		return ;
-	}else{
-		free(result_row);
-		return ;
-	}
 }
 
 void QueueingDlg::OnBnClickedRun()
@@ -258,9 +221,11 @@ void QueueingDlg::OnBnClickedRun()
 		seed_list.push_back(_ttoi(seedText) %100 +1);
 	}
 
+	for (auto vec : result_lines){
+		vec.clear();
+	}
 
-
-	RunButton.EnableWindow(0);
+//	RunButton.EnableWindow(0);
 
 	CString replication_cs;
 	CString avg_arrive_cs;
@@ -269,19 +234,42 @@ void QueueingDlg::OnBnClickedRun()
 	input_replication_times.GetWindowText(replication_cs);
 	input_avg_interarrive.GetWindowText(avg_arrive_cs);
 	input_avg_service_time.GetWindowText(avg_serve_cs);
-
+	
+	QueueingClass* result_row= nullptr;
 	int game_type = 0;
+
 	if (fixed_customer_or_not.GetCheck()){
 		game_type = 1;
+		result_row = new FixedCustomerQueueing();
 		input_customers.GetWindowText(third_para_cs);
 	}
 	if (fixed_length_or_not.GetCheck()){
 		game_type = 2;
+		result_row = new FixedLengthQueueing();
 		input_simulation_length.GetWindowText(third_para_cs);
 	}
-	else{
-		third_para_cs="1000";
+	if (limit_open_time_or_not.GetCheck()){
+		game_type = 3;
+		result_row = new LimitOpenTimeQueueing();
+		CString tmp;
+		input_open_time.GetWindowText(tmp);
+		result_row->m_open_time = _ttoi(tmp);
+		input_close_time.GetWindowText(tmp);
+		result_row->m_close_time = _ttoi(tmp);
 	}
+	if (limit_capacity_or_not.GetCheck()){
+		game_type =4;
+		result_row = new LimitCapacityQueueing();
+	}
+	CString temp;
+	input_customers.GetWindowText(temp);
+	result_row->num_delays_required=_ttoi(temp);
+	input_delay_limit.GetWindowText(temp);
+	result_row->excess_delay=_ttoi(temp);
+	input_queue_capacity.GetWindowText(temp);
+	result_row->queue_capacity=_ttoi(temp);
+	input_simulation_length.GetWindowText(temp);
+	result_row->sim_time_required = _ttoi(temp);
 
 
 	int replication = _ttoi(replication_cs);
@@ -289,9 +277,33 @@ void QueueingDlg::OnBnClickedRun()
 	float avg_serve = _ttof(avg_serve_cs);
 	float third_para = _ttof(third_para_cs);
 	for (int run_seed : seed_list){
-		run_simulation_once(run_seed, game_type,avg_arrive,avg_serve,third_para);
+		run_simulation_once(result_row,run_seed, game_type,avg_arrive,avg_serve,third_para);
 	}
-	RunButton.EnableWindow(1);
+	CString tmp;
+	int index = QueueingResultList.InsertItem(row_count,_T(" "));
+
+	int index_mean = QueueingResultList.InsertItem(row_count+1,_T("Mean of index"));
+	int index_stdev = QueueingResultList.InsertItem(row_count+2,_T("Stdev of index"));
+
+	for (int i = 0;i <result_lines.size(); i++){
+		std::vector<float> v = result_lines[i];
+		double sum = std::accumulate(v.begin(), v.end(), 0.0);
+		double mean = sum / v.size();
+		double sq_sum = std::inner_product(v.begin(), v.end(), v.begin(), 0.0);
+		double stdev = std::sqrt(sq_sum / v.size() - mean * mean);
+		tmp.Format(_T("%.2f"),mean);
+		QueueingResultList.SetItemText(index_mean, i+1,tmp);
+		tmp.Format(_T("%.2f"),stdev);
+		QueueingResultList.SetItemText(index_stdev, i+1,tmp);
+	}
+	if (!result_row){
+		return ;
+	}else{
+		free(result_row);
+		return ;
+	}
+
+	//	RunButton.EnableWindow(1);
 
 }
 
@@ -301,6 +313,10 @@ void QueueingDlg::OnBnClickedClearResult()
 	// TODO: Add your control notification handler code here
 
 	QueueingResultList.DeleteAllItems();
+	row_count=0;
+	for (auto vec : result_lines){
+		vec.clear();
+	}
 	UpdateWindow();
 }
 

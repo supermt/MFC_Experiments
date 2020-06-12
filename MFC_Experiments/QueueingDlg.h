@@ -25,6 +25,8 @@ public:
 	CListCtrl QueueingResultList;
 	CButton fixed_customer_or_not;
 	CButton fixed_length_or_not;
+	CButton limit_open_time_or_not;
+	CButton limit_capacity_or_not;
 	afx_msg void OnBnClickedRun();
 	afx_msg void OnBnClickedClearResult();
 	afx_msg void OnBnClickedFixedCustomer();
@@ -35,7 +37,7 @@ public:
 	CListBox RandomSeedPool;
 	afx_msg void OnBnClickedResetStream();
 	afx_msg void OnBnClickedLoadDefault();
-	void run_simulation_once(int seed,int game_type,float avg_arrive,float avg_service,float third_para);
+	void run_simulation_once(QueueingClass* result_row,int seed,int game_type,float avg_arrive,float avg_service,float third_para);
 	afx_msg void OnBnClickedClearSeedList();
 	CEdit input_avg_interarrive;
 	CEdit input_avg_service_time;

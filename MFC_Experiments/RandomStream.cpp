@@ -61,7 +61,7 @@ std::vector<long> RandomGenerator::zrng = std::vector<long>();
 float RandomGenerator::lcgrand(int stream){
 	long zi, lowprd, hi31;
 
-	zi     = zrng[stream];
+	zi     = default_seeds[stream];
 	lowprd = (zi & 65535) * MULT1;
 	hi31   = (zi >> 16) * MULT1 + (lowprd >> 16);
 	zi     = ((lowprd & 65535) - MODLUS) +
@@ -72,12 +72,12 @@ float RandomGenerator::lcgrand(int stream){
 	zi     = ((lowprd & 65535) - MODLUS) +
 		((hi31 & 32767) << 16) + (hi31 >> 15);
 	if (zi < 0) zi += MODLUS;
-	zrng[stream] = zi;
+	default_seeds[stream] = zi;
 	return (zi >> 7 | 1) / 16777216.0;
 }
 void RandomGenerator::lcgrandst(long zset, int stream){
-	zrng[stream] = zset;
+	default_seeds[stream] = zset;
 }
 long RandomGenerator::lcgrandgt(int stream){
-	return zrng[stream];
+	return default_seeds[stream];
 }
